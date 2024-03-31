@@ -1,6 +1,5 @@
 <script setup lang="ts">
-import { ref } from 'vue';
-import ShopIcon from "./components/Icon/ShopIcon.vue";
+import { ref } from "vue";
 
 interface Product {
   id: number;
@@ -9,7 +8,7 @@ interface Product {
   inStock: boolean;
   imageUrl: string;
 }
-const products=ref<Product[]>([
+const products = ref<Product[]>([
   {
     id: 1,
     title: "纯棉 T 恤",
@@ -38,15 +37,11 @@ const products=ref<Product[]>([
     inStock: true,
     imageUrl: "/images/t-shirt2.jpg",
   },
-])
+]);
 </script>
 
-
 <template>
-  <h1><ShopIcon /></h1>
- 
+  <router-view></router-view>
 </template>
 
-<style scoped>
-
-</style>
+<style scoped></style>

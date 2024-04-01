@@ -23,9 +23,9 @@
     <div class="row m-1">
       <table class="table table-bordered table-hover">
         <tbody>
-          <tr v-for="item in searchDatas" v-bind="searchDatas" :key="item.id" style="height: 15%">
+          <tr v-for="item in searchDatas" style="height: 15%">
             <td class="w-5 align-middle text-center">
-              <input type="checkbox" :id="item.id" v-model="item.ischeck" />
+              <input type="checkbox" :id="item.id" v-model="item.isCheck" />
             </td>
             <td class="w-auto text-center">
               <a :href="item.url" target="_blank">
@@ -48,14 +48,16 @@
 <script setup lang="ts">
 import { ref } from "vue";
 import axios from "@/utils/ApiHelper";
+
 interface SearchData {
   id: string;
-  ischeck: boolean;
+  isCheck: boolean;
   url: string;
   thumbnailUrl: string;
   title: string;
   playTime: string;
 }
+
 let searchDatas = ref<SearchData[]>([]);
 const inputUrl = ref<string>("");
 
@@ -64,7 +66,7 @@ const listget = async () => {
   const params = {
     PlaylistId: inputurl,
   };
-  const { data } = await axios.get("/api/YoutubeDownload/PlayListGet", {
+  const { data } = await axios.get<SearchData[]>("/api/YoutubeDownload/PlayListGet", {
     params: params,
   });
   searchDatas.value = data;

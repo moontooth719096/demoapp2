@@ -16,7 +16,8 @@
     "bootstrap": "^5.3.3",
     "git-all": "^0.0.3",
     "vue": "^3.4.21",
-    "vue-router": "^4.0.13"
+    "vue-router": "^4.0.13",
+    "vuex": "^4.0.2"
   },
   "devDependencies": {
     "@tsconfig/node20": "^20.1.2",

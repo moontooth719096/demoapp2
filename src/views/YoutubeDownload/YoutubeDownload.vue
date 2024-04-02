@@ -19,6 +19,12 @@
         <br />
         <button id="Search_btn" name="Search_btn" type="button" class="btn btn-primary mb-1" :disabled="!inputUrlHaveValue" :onclick="listget">Search</button>
       </div>
+      <div class="mb-2 col-1">
+        <label for="Download_btn" class="form-label mb-1">&nbsp;</label>
+        <br />
+        <button id="Download_btn" class="btn btn-warning mb-1" type="button" :onclick="download" :disabled="searchDatas.length<=0">Download</button>
+      </div>
+
     </form>
     <div class="row m-1">
       <table class="table table-bordered table-hover">
@@ -47,7 +53,8 @@
 
 <script setup lang="ts">
 import { ref } from "vue";
-import axios from "@/utils/ApiHelper";
+import {axiosBase,ContentType} from "@/utils/ApiHelper";
+// import type {ResponseType} from 'axios';
 
 interface SearchData {
   id: string;
@@ -61,12 +68,13 @@ interface SearchData {
 let searchDatas = ref<SearchData[]>([]);
 const inputUrl = ref<string>("");
 
-const listget = async () => {
+const listget = async () => {  
+  let apihelper = axiosBase();
   const inputurl = encodeURI(inputUrl.value);
   const params = {
     PlaylistId: inputurl,
   };
-  const { data } = await axios.get<SearchData[]>("/api/YoutubeDownload/PlayListGet", {
+  const { data } = await apihelper("/api/YoutubeDownload/PlayListGet", {
     params: params,
   });
   searchDatas.value = data;
@@ -79,6 +87,34 @@ const inputUrlHaveValue = () => {
     return false;
   }
 };
+
+const download =async()=>{
+  let apihelper = axiosBase(300000,undefined,'blob');
+  let nowlist = searchDatas.value;
+    //篩選有勾選的資料
+  let downloadlist =  nowlist.filter(x=>x.isCheck).map(({id,title})=>({id,title}));
+  let result = await apihelper.post('/api/YoutubeDownload/Download', downloadlist,{
+    responseType: 'blob',
+});
+  if (result !== null && result.data !== null) {
+   let downloaddata = result.data;
+    downloadData(result);
+  }
+}
+
+const  downloadData= (data:any)=> {
+    const url = window.URL.createObjectURL(new Blob([data.data],  { type: data.headers['content-type'] }));
+     let link = document.createElement('a')
+     link.style.display = 'none'
+     link.href = url
+
+     let timestamp = new Date().getTime();
+     link.download = `${timestamp}.zip`;
+     document.body.appendChild(link);
+     link.click();
+    //  this.downloadComplate();
+    //  document.getElementById('Download_Btn').disabled = false;
+ }
 </script>
 
 <style scoped></style>

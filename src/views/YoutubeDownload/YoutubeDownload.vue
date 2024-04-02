@@ -53,8 +53,13 @@
 
 <script setup lang="ts">
 import { ref } from "vue";
-import {axiosBase,ContentType} from "@/utils/ApiHelper";
-// import type {ResponseType} from 'axios';
+import {axiosBase,RespType} from "@/utils/ApiHelper";
+import Swal from 'sweetalert2'
+
+enum UrlType {
+  "PlayListType",
+  "VedioType"
+}
 
 interface SearchData {
   id: string;
@@ -63,22 +68,116 @@ interface SearchData {
   thumbnailUrl: string;
   title: string;
   playTime: string;
-}
+};
+
+interface getIDmodle {
+   Type?:UrlType,
+   ID?: string
+};
+
+
 
 let searchDatas = ref<SearchData[]>([]);
 const inputUrl = ref<string>("");
 
 const listget = async () => {  
-  let apihelper = axiosBase();
-  const inputurl = encodeURI(inputUrl.value);
-  const params = {
-    PlaylistId: inputurl,
-  };
-  const { data } = await apihelper("/api/YoutubeDownload/PlayListGet", {
-    params: params,
-  });
-  searchDatas.value = data;
+  searchDatas.value = [];
+  const inputurl = inputUrl.value;
+   //檢查傳入資料格式
+  let isNotOK = listGetCheck(inputurl);
+  if (isNotOK) {
+      return;
+  }
+
+  //判斷是ListID 還是 VideoID
+ const checkGet:getIDmodle = getID(inputurl);
+ if (checkGet.Type == null || checkGet.Type === undefined) {
+    //判斷沒有跳出錯誤訊息
+    Swal.fire({
+        icon: "error",
+        text: "請確認您輸入的是合法的網址"
+    });
+    return;
+  } 
+
+  //依照Type呼叫API
+  switch (checkGet.Type) {
+      case UrlType.VedioType:
+          if(checkGet.ID!==undefined){
+            videoAPICall(checkGet.ID);
+          }
+          break;
+      case UrlType.PlayListType:
+        if(checkGet.ID!==undefined){
+           playListAPICall(checkGet.ID);
+         }
+         break;
+     default:
+         break;
+  }
 };
+
+const getID = (url:string):getIDmodle => {
+
+     let result: getIDmodle = {};
+     // 獲取 "list" 參數的值
+     const listParam = getUrlParamKey(url,"list");
+     if (listParam !== null && listParam !== undefined && listParam != '') {
+         //判斷有list參數 存入變數
+         result = {
+          Type: UrlType.PlayListType,
+          ID:listParam
+         };
+         return result;
+     };
+
+     // 獲取 "v" 參數的值
+     const videoID = getUrlParamKey(url,"v");
+     if (videoID !== null && videoID !== undefined && videoID != '') {
+         //判斷有v參數 存入變數
+         result = {
+          Type: UrlType.VedioType,
+          ID:videoID
+         };
+         return result;
+     };
+     return result;
+ }
+
+const listGetCheck = (inputdata:string) =>{
+    //判斷傳入的質是否為空
+    if (inputdata ===null || inputdata === undefined || inputdata ==='') {
+        Swal.fire({
+            icon: "error",
+            text: "請輸入網址或是ListID"
+        });
+        return true;
+    }
+    //判斷輸入的是不是網址
+    if (!isUrlPath(inputdata)) {
+        Swal.fire({
+            icon: "error",
+            text: "請輸入網址或是ListID"
+        });
+        return true;
+    }
+    return false;
+}
+
+const isUrlPath = (urlpath:string)=> {
+    // 定義簡單的URL正規表達式
+    const regex = /^(https?:\/\/)?([\w-]+(\.[\w-]+)+\/?)([\w-./?%&=]*)?$/;
+    // 使用正規表達式進行匹配
+    return regex.test(urlpath);
+}
+
+const getUrlParamKey = (url:string,key:string)=> {
+
+    let urlParams = new URLSearchParams(new URL(url).search);
+    // 獲取 "list" 參數的值
+    let listParam = urlParams.get(key);
+    return listParam;
+}
 
 const inputUrlHaveValue = () => {
   if (inputUrl !== null && inputUrl !== undefined) {
@@ -87,12 +186,67 @@ const inputUrlHaveValue = () => {
     return false;
   }
 };
+const videoAPICall=async(videoid:string)=> {
+
+    let apihelper = axiosBase();
+    const inputurlencode = encodeURI(videoid);
+    const params = {
+        VideoID: videoid
+    };
+    const { data } = await apihelper.get("/api/YoutubeDownload/VideoGet", {
+      params: params,
+    });
+   
+
+    //判斷回傳是否有值
+    if (data !== null && data.length > 0) {
+        searchDatas.value = data;
+    } else {
+        Swal.fire({
+            icon: "error",
+            text: "查無資料"
+        });
+        return;
+    }
+}
+
+const playListAPICall = async (playlistid:string) =>{
+
+    let apihelper = axiosBase();
+    const inputurlencode = encodeURI(playlistid);
+    const params = {
+      PlaylistId: playlistid,
+    };
+    const { data } = await apihelper.get("/api/YoutubeDownload/PlayListGet", {
+      params: params,
+    });
+   
+
+    //判斷回傳是否有值
+    if (data !== null && data.length > 0) {
+        searchDatas.value = data;
+    } else {
+        Swal.fire({
+            icon: "error",
+            text: "查無資料"
+        });
+        return;
+    }
+}
 
 const download =async()=>{
-  let apihelper = axiosBase(300000,undefined,'blob');
+  let apihelper = axiosBase(300000,undefined,RespType.blob);
   let nowlist = searchDatas.value;
     //篩選有勾選的資料
   let downloadlist =  nowlist.filter(x=>x.isCheck).map(({id,title})=>({id,title}));
+  if(downloadlist ===null || downloadlist===undefined || downloadlist.length<=0){
+    Swal.fire({
+            icon: "error",
+            text: "沒有選擇任何歌曲"
+        });
+    return;
+  }
+
   let result = await apihelper.post('/api/YoutubeDownload/Download', downloadlist,{
     responseType: 'blob',
 });

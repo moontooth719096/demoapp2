@@ -1,10 +1,11 @@
 import axios from "axios";
 import type { AxiosInstance,InternalAxiosRequestConfig,ResponseType } from  "axios";
 
+//請求ContentType
 export enum ContentType {
   json = "application/json"
 }
-
+//回傳時的responseType
 export enum RespType{
   blob='blob',
   json='json'
@@ -52,4 +53,3 @@ if(resp === null || resp===undefined){
     return apihelper;
 }
 export default {axiosBase,ContentType,RespType};
-/* export default axiosBase; */

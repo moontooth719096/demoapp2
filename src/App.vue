@@ -1,47 +1,95 @@
-<script setup lang="ts">
-import { ref } from "vue";
-
-interface Product {
-  id: number;
-  title: string;
-  price: number;
-  inStock: boolean;
-  imageUrl: string;
-}
-const products = ref<Product[]>([
-  {
-    id: 1,
-    title: "纯棉 T 恤",
-    price: 66,
-    inStock: true,
-    imageUrl: "/images/t-shirt1.jpg",
-  },
-  {
-    id: 2,
-    title: "夹克外套",
-    price: 128,
-    inStock: true,
-    imageUrl: "/images/jacket1.jpg",
-  },
-  {
-    id: 3,
-    title: "水洗牛仔裤",
-    price: 99,
-    inStock: false,
-    imageUrl: "/images/jeans1.jpg",
-  },
-  {
-    id: 4,
-    title: "印花 T恤",
-    price: 72,
-    inStock: true,
-    imageUrl: "/images/t-shirt2.jpg",
-  },
-]);
-</script>
-
 <template>
-  <router-view></router-view>
+  <header>
+    <nav-component></nav-component>
+  </header>
+  <div class="container-fluid p-0">
+    <main role="main">
+      <router-view></router-view>
+      <div id="LodingBoard" style="display: none" v-show="isLoading">
+        <loding></loding>
+      </div>
+      <button v-on:click="toggleLoading"></button>
+    </main>
+  </div>
 </template>
+<script>
+import { mapGetters, mapActions } from 'vuex';
 
-<style scoped></style>
+export default {
+  computed: {
+    ...mapGetters(['isLoading']),
+  },
+  methods: {
+    ...mapActions(['showLoading', 'hideLoading']),
+    toggleLoading() {
+      if (this.isLoading) {
+        this.hideLoading();
+      } else {
+        this.showLoading();
+      }
+    },
+  },
+};
+</script>
+<style lang="css">
+:root {
+  --puddinghead-color: #6c0609;
+  --puddingbody-color: #faf49c;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+/*
+  .bg-puttingbody{
+      background-color:var(--puddingbody-color) ;
+  }
+  
+  .bg-puttinghead {
+      background-color: var(--puddinghead-color);
+  }*/
+@media (perfers-color-scheme: dark) {
+  body {
+    background: #333;
+    color: #fff;
+  }
+}
+html {
+  /*position: relative;*/
+  width: 100%;
+  height: 100%;
+}
+html body {
+  width: 100%;
+  height: 100%;
+}
+
+@media (max-width: 768px) {
+  html {
+    font-size: 16px;
+  }
+}
+
+.zoomimage {
+  background-size: cover;
+  background-position: center center;
+  background-repeat: no-repeat;
+  -webkit-background-size: cover;
+  -moz-background-size: cover;
+}
+#LodingBoard {
+  position: fixed;
+  display: flex;
+  top: 0%;
+  left: 0%;
+  width: 100%;
+  height: 100%;
+  background-color: rgb(0, 0, 0, 0.3);
+  z-index: 9999;
+  justify-content: center;
+  align-items: center;
+}
+</style>

@@ -7,49 +7,7 @@
     <title>Vite App</title>
   </head>
   <body>
-    <header>
-      <nav class="navbar navbar-expand-sm navbar-toggleable-sm border-bottom box-shadow bg-puttinghead">
-        <div class="container-fluid">
-          <a class="navbar-brand" asp-area="" asp-page="/Index">DemoProgressBar</a>
-          <button
-            class="navbar-toggler"
-            type="button"
-            data-bs-toggle="collapse"
-            data-bs-target=".navbar-collapse"
-            aria-controls="navbarSupportedContent"
-            aria-expanded="false"
-            aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon"></span>
-          </button>
-          <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
-            <ul class="navbar-nav flex-grow-1">
-              <li class="nav-item">
-                <a class="nav-link text-dark" asp-area="" asp-page="/Index" style="color: white !important">Home</a>
-              </li>
-              <li class="nav-item">
-                <a class="nav-link text-dark" asp-area="" asp-page="/ChatRoom/Index">ChatRoom</a>
-              </li>
-              <li class="nav-item">
-                <a class="nav-link text-dark" asp-area="" asp-page="/YoutubeDonload/Index">YTDownload</a>
-              </li>
-            </ul>
-          </div>
-          <div class="navbar-collapse collapse d-sm-inline-flex justify-content-end">
-            <ul class="navbar-nav d-flex justify-content-end flex-grow-1">
-              <li class="nav-item">
-                <button class="btn btn-primary" onclick="AppLogOut()">登出</button>
-              </li>
-            </ul>
-          </div>
-        </div>
-      </nav>
-    </header>
-    <div class="container-fluid p-0">
-      <main role="main">
-        <div id="app"></div>
-      </main>
-    </div>
-
+    <div id="app"></div>
     <script type="module" src="/src/main.ts"></script>
   </body>
 </html>

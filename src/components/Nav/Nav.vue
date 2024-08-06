@@ -25,7 +25,7 @@
       <div class="navbar-collapse collapse d-sm-inline-flex justify-content-end">
         <ul class="navbar-nav d-flex justify-content-end flex-grow-1">
           <li class="nav-item">
-            <button class="btn btn-primary" onclick="AppLogOut()">登出</button>
+            <button class="btn btn-primary" @click="AppLogOut">登出</button>
           </li>
         </ul>
       </div>
@@ -33,6 +33,12 @@
   </nav>
 </template>
 
-<script setup lang="ts"></script>
+<script setup lang="ts">
+import { AppLogOut } from "@/utils/Auth";
+// const logOut = () => {
+//   // google.accounts.id.disableAutoSelect();
+//   AppLogOut();
+// };
+</script>
 
 <style scoped></style>

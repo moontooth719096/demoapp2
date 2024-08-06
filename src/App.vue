@@ -5,30 +5,24 @@
   <div class="container-fluid p-0">
     <main role="main">
       <router-view></router-view>
-      <div id="LodingBoard" style="display: none" v-show="isLoading">
+      <div id="LodingBoard" v-show="isLoading">
         <loding></loding>
       </div>
-      <button v-on:click="toggleLoading"></button>
     </main>
   </div>
 </template>
 <script>
-import { mapGetters, mapActions } from 'vuex';
-
+import { mapGetters } from 'vuex';
+import LoadingCustom from "@/components/Loding/Loding.vue";
+import Nav from "@/components/Nav/Nav.vue";
 export default {
+  components: {
+    loding: LoadingCustom,
+    navComponent:Nav
+  },
   computed: {
     ...mapGetters(['isLoading']),
-  },
-  methods: {
-    ...mapActions(['showLoading', 'hideLoading']),
-    toggleLoading() {
-      if (this.isLoading) {
-        this.hideLoading();
-      } else {
-        this.showLoading();
-      }
-    },
-  },
+  }
 };
 </script>
 <style lang="css">

@@ -5,11 +5,11 @@
   "compilerOptions": {
     "composite": true,
     "tsBuildInfoFile": "./node_modules/.tmp/tsconfig.app.tsbuildinfo",
-
     "baseUrl": ".",
     "paths": {
       "@/*": ["./src/*"],
-      "vuex":["./node_modules/vuex/types"]
+      "vuex":["./node_modules/vuex/types"],
+      // "vue3-google-login":["./node_modules/vue3-google-login/types"]
     }
   }
 }

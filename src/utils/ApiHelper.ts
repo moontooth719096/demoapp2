@@ -1,6 +1,7 @@
 import axios from "axios";
 import type { AxiosInstance, InternalAxiosRequestConfig, ResponseType } from "axios";
-import store from "@/store"
+import store from "@/store";
+import { getCookie, cookiekey, getTokenCookieBearer } from "@/utils/cookie";
 
 //請求ContentType
 export enum ContentType {
@@ -28,29 +29,29 @@ export function axiosBase(timeout?: number, contenttype?: ContentType, resp?: Re
     timeout: timeout,
     headers: {
       "Content-Type": contenttype,
-      Authorization: "",
+      Authorization: getTokenCookieBearer(),
     },
     responseType: resp,
   });
 
   apihelper.interceptors.request.use(
     (config: InternalAxiosRequestConfig<any>) => {
-      store.dispatch('showLoading');
+      // store.dispatch('showLoading');
       return config;
     },
     (error) => {
-      store.dispatch('hideLoading');
+      // store.dispatch('hideLoading');
       return Promise.reject(error);
     }
   );
 
   apihelper.interceptors.response.use(
     (response) => {
-      store.dispatch('hideLoading');
+      // store.dispatch('hideLoading');
       return response;
     },
     (error) => {
-      store.dispatch('hideLoading');
+      // store.dispatch('hideLoading');
       return Promise.reject(error);
     }
   );

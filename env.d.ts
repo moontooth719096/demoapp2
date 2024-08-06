@@ -2,7 +2,8 @@
 interface ImportMetaEnv {
   readonly VITE_AXIOS_TIMEOUT: number;
   readonly VITE_API_BASE_URL: string;
-  // 更多環境變量...
+  readonly VITE_API_LOGINCHECK: string;
+  readonly VITE_GoogleLoginUri:string;
 }
 
 interface ImportMeta {

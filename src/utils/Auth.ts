@@ -1,10 +1,16 @@
+import { computed } from "vue";
 import { axiosBase, RespType } from "@/utils/ApiHelper";
 import { getTokenCookieBearer, deleteCookie, removeTokenCookie, cookiekey } from "@/utils/cookie";
 import { PathKeyType } from "@/router/index";
 import router from "@/router";
+import { mapGetters } from "vuex";
+import store from "@/store";
+import { UserInfo } from "@/types/UserInfo";
 
-var userinfo;
+const userInfo = computed(() => store.getters.userInfo);
+
 export async function LoginCheck() {
+  console.log("LoginCheck!");
   let checkresult = await AppLoginCheck();
   const isLoginPage = router.currentRoute.value.path === "/Login" || router.currentRoute.value.name === "Login";
   if (checkresult) {
@@ -28,7 +34,12 @@ export const AppLoginCheck = async (): Promise<boolean> => {
     await apihelper
       .get(import.meta.env.VITE_API_LOGINCHECK)
       .then((response) => {
+        if (response.status !== 200) {
+          result = false;
+          return;
+        }
         result = true;
+        if (userInfo) store.commit("setUserInfo", response.data);
       })
       .catch((error) => {
         console.error(error);
@@ -53,7 +64,7 @@ const AppLogOutClear = () => {
   //deleteCookie("username");
   //deleteCookie("email");
   //deleteCookie("userInfo");
-  userinfo = null;
+  store.dispatch("showLoading");
   deleteCookie(cookiekey.userinfo);
   removeTokenCookie();
 };

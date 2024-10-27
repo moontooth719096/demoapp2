@@ -3,17 +3,32 @@
     <div class="card-body">
       <form>
         <div class="mb-3">
-          <label for="exampleInputEmail1" class="form-label">Email address</label>
-          <input type="email" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" />
-          <div id="emailHelp" class="form-text">We'll never share your email with anyone else.</div>
+          <label for="exampleInputEmail1" class="form-label"
+            >Email address</label
+          >
+          <input
+            type="email"
+            class="form-control"
+            id="exampleInputEmail1"
+            aria-describedby="emailHelp"
+          />
+          <div id="emailHelp" class="form-text">
+            We'll never share your email with anyone else.
+          </div>
         </div>
         <div class="mb-3">
           <label for="exampleInputPassword1" class="form-label">Password</label>
-          <input type="password" class="form-control" id="exampleInputPassword1" />
+          <input
+            type="password"
+            class="form-control"
+            id="exampleInputPassword1"
+          />
         </div>
         <div class="mb-3 form-check">
           <input type="checkbox" class="form-check-input" id="exampleCheck1" />
-          <label class="form-check-label" for="exampleCheck1">Check me out</label>
+          <label class="form-check-label" for="exampleCheck1"
+            >Check me out</label
+          >
         </div>
         <div class="row">
           <button type="button" class="btn btn-primary col m-1">Submit</button>
@@ -27,7 +42,8 @@
             :theme="'filled_black'"
             :size="'medium'"
             :text="'signin'"
-            :logo_alignment="'left'"></GoogleSignInButton>
+            :logo_alignment="'left'"
+          ></GoogleSignInButton>
           <!-- <GoogleLogin :callback="callback"/> -->
         </div>
       </form>
@@ -37,11 +53,20 @@
 
 <script setup lang="ts">
 //https://vue3-google-signin.vercel.app/guide/google-signin-button.html
-import { type CredentialResponse, useOneTap, decodeCredential } from "vue3-google-signin";
+import { computed } from "vue";
+import {
+  type CredentialResponse,
+  useOneTap,
+  decodeCredential,
+} from "vue3-google-signin";
 import { axiosBase, RespType } from "@/utils/ApiHelper";
 import { setTokenCookie } from "@/utils/cookie";
 import { LoginCheck } from "@/utils/Auth";
 import { GoogleLoginApiResult } from "@/types/GoogleLogin";
+import store from "@/store";
+import Swal from "sweetalert2";
+
+const userInfo = computed(() => store.getters.userInfo);
 
 useOneTap({
   onSuccess: (response: CredentialResponse) => {
@@ -53,14 +78,10 @@ useOneTap({
     handleLoginError();
   },
 });
-
-const callback = async (response: CredentialResponse) => {
-  // This callback will be triggered when the user selects or login to
-  // his Google account from the popup
-};
 // handle success event
 const handleLoginSuccess = async (response: CredentialResponse) => {
   const { credential } = response;
+  
   let getresult = await googleLogin(credential);
   if (getresult.code != 1) {
     return;
@@ -78,7 +99,9 @@ const handleLoginError = () => {
   console.error("Login failed");
 };
 
-const googleLogin = async (token: string | undefined): Promise<GoogleLoginApiResult> => {
+const googleLogin = async (
+  token: string | undefined
+): Promise<GoogleLoginApiResult> => {
   let result = new GoogleLoginApiResult();
   const postdata = {
     credential: token,
@@ -87,11 +110,23 @@ const googleLogin = async (token: string | undefined): Promise<GoogleLoginApiRes
   await apiHelp
     .post(import.meta.env.VITE_GoogleLoginUri, postdata)
     .then(function (response) {
+      if (response === null || response === undefined) {
+        Swal.fire({
+          icon: "error",
+          text: "登入失敗",
+        });
+        return;
+      }
       result.code = 1;
       result.JWT = response.data.jwt;
-      // userinfo = response.data.userInfo;
+      if (userInfo) store.commit("setUserInfo", response.data.userIndo);
     })
     .catch(function (error) {
+      //判斷沒有跳出錯誤訊息
+      Swal.fire({
+        icon: "error",
+        text: "登入失敗",
+      });
       console.error(error);
     });
   return result;

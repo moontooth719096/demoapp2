@@ -1,0 +1,47 @@
+@use "@/assets/styles/main.scss" as sizeset;
+@mixin card-hfset {
+    height: 15%;
+    min-height: 50px;
+    max-height: 70px;
+    min-width: 80px;
+}
+.card {
+    .card-header,
+    .card-footer {
+        @include card-hfset;
+    }
+
+    .card-header {
+        .userinfo {
+            .pic {
+                max-height: 50px;
+                max-width: 50px;
+            }
+        }
+    }
+
+    .card-body {
+        min-width: 80px;
+        .useritem {
+            cursor: pointer;
+
+            .item-center {
+                font-size: 0.9rem;
+            }
+
+            .otherinfo {
+                .noread {
+                    font-size: 0.7rem;
+                }
+            }
+
+            &.active {
+                background-color: dodgerblue
+            }
+
+            &:hover {
+                background-color: lightskyblue
+            }
+        }
+    }
+}

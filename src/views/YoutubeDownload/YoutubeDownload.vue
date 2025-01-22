@@ -12,17 +12,35 @@
           placeholder="請填入youtube影片網址"
           v-model.trim="inputUrl"
           ref="urlinput"
-          required />
+          required
+        />
       </div>
       <div class="mb-2 col-1">
         <label for="Search_btn" class="form-label mb-1">&nbsp;</label>
         <br />
-        <button id="Search_btn" name="Search_btn" type="button" class="btn btn-primary mb-1" :disabled="!inputUrlHaveValue" :onclick="listget">Search</button>
+        <button
+          id="Search_btn"
+          name="Search_btn"
+          type="button"
+          class="btn btn-primary mb-1"
+          :disabled="!inputUrlHaveValue"
+          :onclick="listget"
+        >
+          Search
+        </button>
       </div>
       <div class="mb-2 col-1">
         <label for="Download_btn" class="form-label mb-1">&nbsp;</label>
         <br />
-        <button id="Download_btn" class="btn btn-warning mb-1" type="button" :onclick="download" :disabled="searchDatas.length <= 0">Download</button>
+        <button
+          id="Download_btn"
+          class="btn btn-warning mb-1"
+          type="button"
+          :onclick="download"
+          :disabled="searchDatas.length <= 0"
+        >
+          Download
+        </button>
       </div>
     </form>
     <div class="row m-1">
@@ -30,18 +48,23 @@
         <tbody>
           <tr v-for="item in searchDatas" style="height: 15%">
             <td class="w-5 align-middle text-center">
-              <input type="checkbox" :id="item.id" v-model="item.isCheck" />
+              <input type="checkbox" :id="item.Id" v-model="item.IsCheck" />
             </td>
             <td class="w-auto text-center">
-              <a :href="item.url" target="_blank">
-                <img style="width: 6.25rem" :src="item.thumbnailUrl" class="img-fluid img-thumbnail" alt="..." />
+              <a :href="item.Url" target="_blank">
+                <img
+                  style="width: 6.25rem"
+                  :src="item.ThumbnailUrl"
+                  class="img-fluid img-thumbnail"
+                  alt="..."
+                />
               </a>
             </td>
             <td class="w-auto align-middle">
-              {{ item.title }}
+              {{ item.Title }}
             </td>
             <td class="w-5 align-middle text-center">
-              {{ item.playTime }}
+              {{ item.PlayTime }}
             </td>
           </tr>
         </tbody>
@@ -54,6 +77,7 @@
 import { ref } from "vue";
 import { axiosBase, RespType } from "@/utils/ApiHelper";
 import Swal from "sweetalert2";
+import store from "@/store";
 
 enum UrlType {
   "PlayListType",
@@ -61,12 +85,12 @@ enum UrlType {
 }
 
 interface SearchData {
-  id: string;
-  isCheck: boolean;
-  url: string;
-  thumbnailUrl: string;
-  title: string;
-  playTime: string;
+  Id: string;
+  IsCheck: boolean;
+  Url: string;
+  ThumbnailUrl: string;
+  Title: string;
+  PlayTime: string;
 }
 
 interface getIDmodle {
@@ -78,22 +102,26 @@ let searchDatas = ref<SearchData[]>([]);
 const inputUrl = ref<string>("");
 
 const listget = async () => {
+  store.dispatch("showLoading");
   searchDatas.value = [];
   const inputurl = inputUrl.value;
   //檢查傳入資料格式
   let isNotOK = listGetCheck(inputurl);
   if (isNotOK) {
+    store.dispatch("hideLoading");
     return;
   }
 
   //判斷是ListID 還是 VideoID
   const checkGet: getIDmodle = getID(inputurl);
   if (checkGet.Type == null || checkGet.Type === undefined) {
+    store.dispatch("hideLoading");
     //判斷沒有跳出錯誤訊息
     Swal.fire({
       icon: "error",
       text: "請確認您輸入的是合法的網址",
     });
+
     return;
   }
 
@@ -101,17 +129,18 @@ const listget = async () => {
   switch (checkGet.Type) {
     case UrlType.VedioType:
       if (checkGet.ID !== undefined) {
-        videoAPICall(checkGet.ID);
+        await videoAPICall(checkGet.ID);
       }
       break;
     case UrlType.PlayListType:
       if (checkGet.ID !== undefined) {
-        playListAPICall(checkGet.ID);
+        await playListAPICall(checkGet.ID);
       }
       break;
     default:
       break;
   }
+  store.dispatch("hideLoading");
 };
 
 const getID = (url: string): getIDmodle => {
@@ -226,11 +255,19 @@ const playListAPICall = async (playlistid: string) => {
 };
 
 const download = async () => {
+  store.dispatch("showLoading");
   let apihelper = axiosBase(300000, undefined, RespType.blob);
   let nowlist = searchDatas.value;
   //篩選有勾選的資料
-  let downloadlist = nowlist.filter((x) => x.isCheck).map(({ id, title }) => ({ id, title }));
-  if (downloadlist === null || downloadlist === undefined || downloadlist.length <= 0) {
+  let downloadlist = nowlist
+    .filter((x) => x.IsCheck)
+    .map(({ Id, Title }) => ({ Id, Title }));
+  if (
+    downloadlist === null ||
+    downloadlist === undefined ||
+    downloadlist.length <= 0
+  ) {
+    store.dispatch("hideLoading");
     Swal.fire({
       icon: "error",
       text: "沒有選擇任何歌曲",
@@ -238,17 +275,24 @@ const download = async () => {
     return;
   }
 
-  let result = await apihelper.post("/api/YoutubeDownload/Download", downloadlist, {
-    responseType: "blob",
-  });
+  let result = await apihelper.post(
+    "/api/YoutubeDownload/Download",
+    downloadlist,
+    {
+      responseType: "blob",
+    }
+  );
   if (result !== null && result.data !== null) {
     let downloaddata = result.data;
     downloadData(result);
   }
+  store.dispatch("hideLoading");
 };
 
 const downloadData = (data: any) => {
-  const url = window.URL.createObjectURL(new Blob([data.data], { type: data.headers["content-type"] }));
+  const url = window.URL.createObjectURL(
+    new Blob([data.data], { type: data.headers["content-type"] })
+  );
   let link = document.createElement("a");
   link.style.display = "none";
   link.href = url;

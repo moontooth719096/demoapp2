@@ -1,52 +1,62 @@
-<template id="main">
-  <div id="CardPannel" class="card">
-    <div class="card-body">
-      <form>
-        <div class="mb-3">
-          <label for="exampleInputEmail1" class="form-label"
-            >Email address</label
-          >
-          <input
-            type="email"
-            class="form-control"
-            id="exampleInputEmail1"
-            aria-describedby="emailHelp"
-          />
-          <div id="emailHelp" class="form-text">
-            We'll never share your email with anyone else.
+<template>
+  <div id="LoginPage">
+    <div id="CardPannel" class="card">
+      <div class="card-body">
+        <form>
+          <div class="mb-3">
+            <label for="exampleInputEmail1" class="form-label"
+              >Email address</label
+            >
+            <input
+              type="email"
+              class="form-control"
+              id="exampleInputEmail1"
+              aria-describedby="emailHelp"
+            />
+            <div id="emailHelp" class="form-text">
+              We'll never share your email with anyone else.
+            </div>
           </div>
-        </div>
-        <div class="mb-3">
-          <label for="exampleInputPassword1" class="form-label">Password</label>
-          <input
-            type="password"
-            class="form-control"
-            id="exampleInputPassword1"
-          />
-        </div>
-        <div class="mb-3 form-check">
-          <input type="checkbox" class="form-check-input" id="exampleCheck1" />
-          <label class="form-check-label" for="exampleCheck1"
-            >Check me out</label
-          >
-        </div>
-        <div class="row">
-          <button type="button" class="btn btn-primary col m-1">Submit</button>
+          <div class="mb-3">
+            <label for="exampleInputPassword1" class="form-label"
+              >Password</label
+            >
+            <input
+              type="password"
+              class="form-control"
+              id="exampleInputPassword1"
+            />
+          </div>
+          <div class="mb-3 form-check">
+            <input
+              type="checkbox"
+              class="form-check-input"
+              id="exampleCheck1"
+            />
+            <label class="form-check-label" for="exampleCheck1"
+              >Check me out</label
+            >
+          </div>
+          <div class="row">
+            <button type="button" class="btn btn-primary col m-1">
+              Submit
+            </button>
 
-          <!-- <div id="buttonDiv" class="col m-1"></div> -->
-          <GoogleSignInButton
-            @success="handleLoginSuccess"
-            @error="handleLoginError"
-            :one-tap="true"
-            :shape="'rectangular'"
-            :theme="'filled_black'"
-            :size="'medium'"
-            :text="'signin'"
-            :logo_alignment="'left'"
-          ></GoogleSignInButton>
-          <!-- <GoogleLogin :callback="callback"/> -->
-        </div>
-      </form>
+            <!-- <div id="buttonDiv" class="col m-1"></div> -->
+            <GoogleSignInButton
+              @success="handleLoginSuccess"
+              @error="handleLoginError"
+              :one-tap="true"
+              :shape="'rectangular'"
+              :theme="'filled_black'"
+              :size="'medium'"
+              :text="'signin'"
+              :logo_alignment="'left'"
+            ></GoogleSignInButton>
+            <!-- <GoogleLogin :callback="callback"/> -->
+          </div>
+        </form>
+      </div>
     </div>
   </div>
 </template>
@@ -81,7 +91,7 @@ useOneTap({
 // handle success event
 const handleLoginSuccess = async (response: CredentialResponse) => {
   const { credential } = response;
-  
+
   let getresult = await googleLogin(credential);
   if (getresult.code != 1) {
     return;
@@ -118,8 +128,8 @@ const googleLogin = async (
         return;
       }
       result.code = 1;
-      result.JWT = response.data.jwt;
-      if (userInfo) store.commit("setUserInfo", response.data.userIndo);
+      result.JWT = response.data.JWT;
+      if (userInfo) store.commit("setUserInfo", response.data.userInfo);
     })
     .catch(function (error) {
       //判斷沒有跳出錯誤訊息
@@ -150,16 +160,5 @@ const decodeJwtResponse = (token: string | undefined): any => {
 </script>
 
 <style lang="scss" scoped>
-#main {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 100%;
-}
-#CardPannel {
-  width: 30%;
-  height: auto;
-  color: white;
-  background-color: rgb(255, 255, 255, 0.2);
-}
+@import "@/assets/styles/LoginPage/login.scss";
 </style>

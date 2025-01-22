@@ -12,10 +12,12 @@
     "build:production": "vite build --mode production"
   },
   "dependencies": {
+    "@microsoft/signalr": "^8.0.7",
     "@popperjs/core": "^2.11.8",
     "axios": "^1.6.8",
     "bootstrap": "^5.3.3",
     "git-all": "^0.0.3",
+    "lodash": "^4.17.21",
     "sweetalert2": "^11.10.7",
     "vue": "^3.4.21",
     "vue-router": "^4.0.13",
@@ -25,6 +27,7 @@
   },
   "devDependencies": {
     "@tsconfig/node20": "^20.1.2",
+    "@types/lodash": "^4.17.13",
     "@types/node": "^20.11.28",
     "@vitejs/plugin-vue": "^5.0.4",
     "@vue/tsconfig": "^0.5.1",

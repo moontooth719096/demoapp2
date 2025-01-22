@@ -1,0 +1,25 @@
+@import "@/assets/styles/size.scss";
+.chatroomdiv{
+    height: 100%;
+    width: 100%;
+    .usersboard {
+            height: 100%;
+            width: 30vw;
+            min-width: 80px;
+        }
+    
+        .talkboard {
+            min-width: 80px;
+            height: 100%;
+            width: 70vw;
+        }
+    
+        @include respond-to(pad) {
+            .usersboard {
+                width: 10vw;
+            }
+            .talkboard {
+                width: 90vw;
+            }
+        }
+}

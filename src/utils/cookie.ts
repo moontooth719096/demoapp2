@@ -8,7 +8,7 @@ export const setCookie=(name:string, value:any, expirationTimestamp: string | nu
     const expirationDate = new Date(expirationTimestamp);
 
     // 設定 cookie 字符串
-    const cookieString = `${name}=${encodeURIComponent(value)}; domain=localhost; secure; expires=${expirationDate.toUTCString()}; path=/`;
+    const cookieString = `${name}=${encodeURIComponent(value)}; domain=localhost; secure; samesite=none; expires=${expirationDate.toUTCString()}; path=/`;
 
     // 設定 cookie
     document.cookie = cookieString;

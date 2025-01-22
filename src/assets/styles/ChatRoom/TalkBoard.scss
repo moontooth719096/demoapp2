@@ -1,0 +1,55 @@
+@import "@/assets/styles/size.scss";
+@mixin card-hfset {
+    height: auto;
+    min-height: 50px;
+    max-height: 70px;
+}
+.card {
+    height: 100%;
+    .card-header,
+    .card-footer {
+        @include card-hfset;
+    }
+    .card-body {
+        font-size: 1rem;
+        flex-grow: 1;
+        overflow-y: auto;
+        .messagebar {
+            .userimg {
+                max-height: 50px;
+                max-width: 50px;
+            }
+        }
+        .talkboard-body {
+            max-width: 45%;
+            height: auto;
+            @include respond-to(pad) {
+                max-width: 90%;
+            }
+        }
+        .messageself {
+            background-color: springgreen;
+        }
+        .messageorther {
+            background-color: lightgray;
+        }
+        // &::-webkit-scrollbar {
+        //     display: none;
+        // }
+        &::-webkit-scrollbar {
+            width: 4px;
+        }
+        
+        &::-webkit-scrollbar-thumb {
+            background-color: rgba(0, 0, 0, 0.5);
+            border-radius: 2px;
+        }
+        
+    }
+    .card-footer {
+        .sendmsgbtn {
+            width: 5vw;
+            min-width: 58px;
+        }
+    }
+}

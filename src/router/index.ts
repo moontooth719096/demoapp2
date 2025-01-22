@@ -13,7 +13,7 @@ export enum PathKeyType {
 
 const routes: Array<vueRouter.RouteRecordRaw> = [
   { path: "/", name: PathKeyType.Home.toString(), component: Home },
-  { path: "/Login", name: PathKeyType.Login.toString(), component: Login, meta: { hideMenu: true } },
+  { path: "/Login", name: PathKeyType.Login.toString(), component: Login},
   { path: "/YoutubeDownload", name: PathKeyType.YoutubeDownload.toString(), component: () => import("@/views/YoutubeDownload/YoutubeDownload.vue") },
   { path: "/ChatRoom", name: PathKeyType.ChatRoom.toString(), component: () => import("@/views/ChatRoom/ChatRoom.vue") },
 ];

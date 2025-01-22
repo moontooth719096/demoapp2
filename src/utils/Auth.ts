@@ -6,6 +6,7 @@ import router from "@/router";
 import { mapGetters } from "vuex";
 import store from "@/store";
 import { UserInfo } from "@/types/UserInfo";
+import { Start ,Disconnected} from "./ChatRoomHubHelper";
 
 const userInfo = computed(() => store.getters.userInfo);
 
@@ -39,7 +40,15 @@ export const AppLoginCheck = async (): Promise<boolean> => {
           return;
         }
         result = true;
-        if (userInfo) store.commit("setUserInfo", response.data);
+        if (userInfo.value){
+          // const userinfo = new UserInfo();
+          // userinfo.UserID =response.data.userID; 
+          // userinfo.PicturesPath =response.data.picturesPath; 
+          // userinfo.UserLevel =response.data.userLevel; 
+          // userinfo.UserName =response.data.userName; 
+          Start();//聊天室連線
+          store.commit("setUserInfo", response.data);
+        } 
       })
       .catch((error) => {
         console.error(error);
@@ -51,6 +60,7 @@ export const AppLoginCheck = async (): Promise<boolean> => {
 };
 
 export const AppLogOut = () => {
+  Disconnected();
   AppLogOutClear();
   const isLiginPage = router.currentRoute.value.path === "/Login" || router.currentRoute.value.name === "Login";
   //如果登出時當下不在登入頁，則轉向登入頁
@@ -64,7 +74,8 @@ const AppLogOutClear = () => {
   //deleteCookie("username");
   //deleteCookie("email");
   //deleteCookie("userInfo");
-  store.dispatch("showLoading");
+  // store.dispatch("showLoading");
+  store.dispatch("LogOut");
   deleteCookie(cookiekey.userinfo);
   removeTokenCookie();
-};
+};  

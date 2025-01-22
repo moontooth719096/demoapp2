@@ -1,0 +1,14 @@
+#LoginPage{
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center; 
+    #CardPannel {
+        width: 30%;
+        min-width: 20rem;
+        height: auto;
+        color: white;
+        background-color: rgb(255, 255, 255, 0.2);
+    }
+}

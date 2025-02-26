@@ -81,7 +81,7 @@ export async function GetConnectedUsers(){
 //talkid:對方的userid
 //senduser:本句話發話人的userid
 //message:本句話的內容
-export async function AddTalk(talkid?:string, senduserid?:string, message?:string){
+export async function AddTalkDo(talkid?:string, senduserid?:string, message?:string){
   if(!talkid||!senduserid||!message){
     return;
   }
@@ -127,4 +127,4 @@ export async function AddTalk(talkid?:string, senduserid?:string, message?:strin
     await store.dispatch("PrivateMessage",privatemessageinfo);
  }
 
-export default { Start,Disconnected,GetConnectedUsers,AddTalk,RefreshChat,SendPrivateMessage};
+export default { Start,Disconnected,GetConnectedUsers,AddTalkDo,RefreshChat,SendPrivateMessage};

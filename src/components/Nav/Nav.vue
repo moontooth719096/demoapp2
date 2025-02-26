@@ -1,5 +1,5 @@
 <template>
-  <nav
+  <nav style="height:100%"
     class="navbar navbar-expand-sm navbar-toggleable-sm border-bottom box-shadow bg-puttinghead"
   >
     <div class="container-fluid">

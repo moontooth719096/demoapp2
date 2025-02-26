@@ -12,7 +12,7 @@ export class ChatRoomInfo{
     // nowtalkid?:string;
     nowTalkinfo?:NowTalkInfo;
     talklist?:Array<TalkInfo>;//聊天內容清單
-    nowtalk?:TalkContentInfo; //存放當前正在聊天的完整對話內容
+    nowtalk?:Array<TalkContentInfo>; //存放當前正在聊天的完整對話內容
 }
 
 export class PrivatMessageModel{

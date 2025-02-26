@@ -22,4 +22,5 @@ export interface SingleTalkInfo extends TalkContentInfo{
 export interface NowTalkInfo{
     UserID:string;
     PicturesPath:string;
+    UserName:string
 }

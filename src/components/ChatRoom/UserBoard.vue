@@ -15,7 +15,7 @@
         class="useritem row g-0 border rounded-2 p-1"
         v-for="user in chatroominfo.chatlist"
         :class="{ active: user.UserID == chatroominfo.nowTalkinfo?.UserID }"
-        :click="talkselect(user.UserID)"
+        @click="talkselect(user.UserID)"
       >
         <img
           class="item-pic col-12 col-md-3 img-thumbnail rounded-circle border-1 p-1"
@@ -33,7 +33,7 @@
           class="otherinfo col-2 col-md-2 d-none d-md-block position-relative"
         >
           <span
-            class="badge bg-primary rounded-pill position-absolute top-50 start-50 translate-middle noread"
+            class="badge bg-primary rounded-circle position-absolute top-50 start-50 translate-middle noread"
             v-if="user.NoReadCount > 0"
           >
             {{ user.NoReadCount }}

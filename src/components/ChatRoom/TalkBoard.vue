@@ -1,6 +1,11 @@
 <template>
-  <div class="card d-flex flex-column">
-    <div class="card-header"></div>
+  <div class="card d-flex ">
+    <div class="card-header p-0 d-flex flex-row justify-content-center">
+      <strong
+        class="name col text-truncate align-self-center"
+        >{{ chatroominfo?.nowTalkinfo?.UserName }}</strong
+      >
+    </div>
     <div
       class="card-body overflow-auto flex-grow-1"
       ref="scrollContainer"
@@ -16,7 +21,7 @@
         <img
           class="userimg img-thumbnail border-1"
           :src="
-            text == userInfo.UserID
+            text.sayid  == userInfo.UserID
               ? userInfo.PicturesPath
               : chatroominfo.nowTalkinfo?.PicturesPath
           "
@@ -56,14 +61,11 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref } from "vue";
+import { computed, ref,watch,nextTick } from "vue";
 import store from "@/store";
-import { ChatRoomInfo } from "@/types/ChatRoom/ChatRoomInfo";
-import { UserInfo } from "@/types/UserInfo";
 import { isWhiteSpace } from "@/utils/CheckHelper";
 import {
   GetConnectedUsers,
-  AddTalk,
   RefreshChat,
   SendPrivateMessage,
 } from "@/utils/ChatRoomHubHelper";
@@ -93,19 +95,35 @@ const sendmessage = async () => {
     return;
   }
   keyonmessage.value = "";
+   // 发送消息后，确保滚动到最底部
+   nextTick(() => {
+    autoScrollToBottom();
+  });
 };
-// const autoScrollToBottom = () => {
-//   if (!scrollContainer.value) return; // 确保 ref 存在
-//   const container = scrollContainer.value;
-//   if (container.scrollHeight !== undefined) {
-//     container.scrollTop = container.scrollHeight; // 滚动到底部
-//   }
-//   // 抓取scrollbar的區塊
-//   //  let container = this.$refs.scrollContainer;
-//   //  if (container.scrollHeight == undefined)
-//   //      return;
-//   //  container.scrollTop = container.scrollHeight;
-// };
+const autoScrollToBottom = () => {
+  if (!scrollContainer.value) return; // 确保 ref 存在
+  const container = scrollContainer.value;
+  if (container.scrollHeight !== undefined) {
+    container.scrollTop = container.scrollHeight; // 滚动到底部
+  }
+  // 抓取scrollbar的區塊
+  //  let container = this.$refs.scrollContainer;
+  //  if (container.scrollHeight == undefined)
+  //      return;
+  //  container.scrollTop = container.scrollHeight;
+};
+
+// 監聽 chatroominfo.nowtalk 的變化
+watch(
+  () => chatroominfo.value.nowtalk,
+  () => {
+    // 每當訊息更新時，確保滾動到最底部
+    nextTick(() => {
+      autoScrollToBottom();
+    });
+  },
+  { deep: true } // 確保每次訊息變化時都會觸發
+);
 </script>
 
 <style lang="scss" scoped>

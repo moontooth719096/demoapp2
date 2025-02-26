@@ -1,8 +1,6 @@
 @use "@/assets/styles/main.scss" as sizeset;
 @mixin card-hfset {
     height: 15%;
-    min-height: 50px;
-    max-height: 70px;
     min-width: 80px;
 }
 .card {

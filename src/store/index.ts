@@ -5,7 +5,7 @@ import {ChatInfo} from "@/types/ChatRoom/ChatInfo";
 import type { TalkInfo, TalkContentInfo,SingleTalkInfo,NowTalkInfo } from "@/types/ChatRoom/TalkInfo";
 import _ from "lodash";
 import {HubConnection} from "@microsoft/signalr";
-import { GetConnectedUsers,AddTalk,RefreshChat} from "@/utils/ChatRoomHubHelper";
+import { GetConnectedUsers,RefreshChat} from "@/utils/ChatRoomHubHelper";
 
 export interface statetype{
   userInfo:UserInfo,
@@ -54,6 +54,12 @@ export default createStore<statetype>({
     setNowtalkInfo(state, payload:NowTalkInfo) {
       if(state.chatRoomInfo){
         state.chatRoomInfo.nowTalkinfo = payload;
+        const talk= state.chatRoomInfo.talklist?.find(x=>x.talkid ==payload.UserID) as TalkInfo;
+        if(talk){
+          state.chatRoomInfo.nowtalk = talk.talks;
+        }else{
+          state.chatRoomInfo.nowtalk =[];
+        }
       }
     },
     //增加新的聊天室
@@ -68,7 +74,7 @@ export default createStore<statetype>({
         state.chatRoomInfo.talklist.find(x=>x.talkid ==payload.talkid)?.talks.push(payload);
       }
     },
-    setNowtalk(state, payload:TalkContentInfo) {
+    setNowtalk(state, payload:Array<TalkContentInfo>) {
       if(state.chatRoomInfo){
         state.chatRoomInfo.nowtalk = payload;
       }
@@ -128,7 +134,7 @@ export default createStore<statetype>({
             }
          }
     },
-    async talkselect({ commit },selectid:String) {
+    async talkselect({ commit,dispatch },selectid:string) {
       console.log('vuex_talkselect');
       //判斷使用者清單沒有這個人就刷新，如果刷了一次還是沒有，就跳過
       let istry = false as boolean;
@@ -144,14 +150,23 @@ export default createStore<statetype>({
       const user = this.state.chatRoomInfo.chatlist?.find(x=>x.UserID ==selectid) as ChatInfo;
       if(user?.NoReadCount > 0)
         user.NoReadCount = 0;
+      const privatemessageinfo:SingleTalkInfo = {
+        talkid:selectid,
+        sayid:this.state.userInfo.UserID,
+        message:undefined
+      }
+      await dispatch('AddTalk',privatemessageinfo);
+ 
       const nowTalkInfo:NowTalkInfo={
         UserID:user?.UserID??"",
-        PicturesPath:user?.PicturesPath??""
+        PicturesPath:user?.PicturesPath??"",
+        UserName:user.UserName??""
       };
+      
       commit("setNowtalkInfo",nowTalkInfo);
       // RefreshChat();
     },
-    async PrivateMessage({ commit },messageinfo:SingleTalkInfo) {
+    async PrivateMessage({ commit,dispatch },messageinfo:SingleTalkInfo) {
         //判斷使用者清單沒有這個人就刷新，如果刷了一次還是沒有，就跳過
         let istry = false as boolean;
         while(!this.state.chatRoomInfo.chatlist?.some(x=>x.UserID ==messageinfo.talkid)){
@@ -168,29 +183,41 @@ export default createStore<statetype>({
             user.NoReadCount = user.NoReadCount + 1;
          }
         user.LastMesage = messageinfo.message;
+        const privatemessageinfo:SingleTalkInfo = {
+          talkid:messageinfo.talkid,
+          sayid:messageinfo.sayid,
+          message:messageinfo.message
+        }
         //將收到的訊息加到對話清單裡
-        AddTalk(messageinfo.talkid, messageinfo.sayid, messageinfo.message);
+        await dispatch('AddTalk',privatemessageinfo);
         //判斷目前沒有選擇跟任何人聊天,就給目前私訊你的人
         if (!this.state.chatRoomInfo.nowTalkinfo) {
             const nowTalkInfo:NowTalkInfo={
               UserID:user?.UserID??"",
-              PicturesPath:user?.PicturesPath??""
+              PicturesPath:user?.PicturesPath??"",
+              UserName:user?.UserName??""
             };
               commit("setNowtalkInfo",nowTalkInfo);
         }
     },
-    AddTalk({ commit },messageinfo:SingleTalkInfo) {
+    async AddTalk({ commit },messageinfo:SingleTalkInfo) {
         let talk = this.state.chatRoomInfo.talklist?.find(x=>x.talkid ==messageinfo.talkid) as TalkInfo;
         if (talk) {
-            const currenttalkcontent:TalkContentInfo = {
-                sayid:messageinfo.sayid,
-                message:messageinfo.message
+            if(messageinfo.message){
+              const currenttalkcontent:TalkContentInfo = {
+              sayid:messageinfo.sayid,
+              message:messageinfo.message
             }
             talk.talks.push(currenttalkcontent);
+          }
         }
         else {
             const user = this.state.chatRoomInfo.chatlist?.find(x=>x.UserID ==messageinfo.talkid) as ChatInfo;
-            const talk:TalkInfo = { talkid: messageinfo.talkid??"",talkImgPath:user.PicturesPath??"",talks: [{ sayid: messageinfo.sayid, message: messageinfo.message }] };
+            let newtalks = new Array<TalkContentInfo>();
+            if(messageinfo.message){
+              newtalks =[{ sayid: messageinfo.sayid, message: messageinfo.message }]
+            }
+            const talk:TalkInfo = { talkid: messageinfo.talkid??"",talkImgPath:user.PicturesPath??"",talks: newtalks };
             commit("pushTalklist",talk);
         }
 
@@ -218,3 +245,4 @@ export default createStore<statetype>({
     chatRoomInfo:(state) => state.chatRoomInfo
   },
 });
+

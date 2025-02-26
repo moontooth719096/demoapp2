@@ -1,14 +1,15 @@
 @import "@/assets/styles/size.scss";
 @mixin card-hfset {
-    height: auto;
-    min-height: 50px;
-    max-height: 70px;
+    height:15%;
+    min-width: 80px;
 }
 .card {
     height: 100%;
+    flex-direction: column;
     .card-header,
     .card-footer {
         @include card-hfset;
+        flex-shrink: 0; /* 避免被壓縮 */
     }
     .card-body {
         font-size: 1rem;
@@ -21,10 +22,10 @@
             }
         }
         .talkboard-body {
-            max-width: 45%;
+            max-width: 80%;
             height: auto;
             @include respond-to(pad) {
-                max-width: 90%;
+                max-width: 60%;
             }
         }
         .messageself {

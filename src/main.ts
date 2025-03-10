@@ -11,9 +11,6 @@ createApp(App)
 .use(GoogleSignInPlugin, {
     clientId: '607977203990-5s5ur3sgv55i7gr4h8eapuuq8jvh0pim.apps.googleusercontent.com',
   })
-  // .use(vue3GoogleLogin, {
-  //   clientId: '464709150983-inueb5o7stba381k8p47ai0grhd8glvl.apps.googleusercontent.com'
-  // })
 .use(store)
 .use(router)
 .mount("#app");

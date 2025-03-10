@@ -1,50 +1,73 @@
 <template>
   <div id="YoutubeDonloadApp" class="row g-0 justify-content-center">
-    <form class="row g-3 needs-validation">
-      <div class="mb-2 col-9">
-        <label for="youtubeurl" class="form-label mb-1">youtube影片網址</label>
-        <input
-          type="text"
-          class="form-control col-9 mb-1"
-          name="youtubeurl"
-          id="youtubeurl"
-          aria-describedby="helpId"
-          placeholder="請填入youtube影片網址"
-          v-model.trim="inputUrl"
-          ref="urlinput"
-          required
-        />
-      </div>
-      <div class="mb-2 col-1">
-        <label for="Search_btn" class="form-label mb-1">&nbsp;</label>
-        <br />
-        <button
-          id="Search_btn"
-          name="Search_btn"
-          type="button"
-          class="btn btn-primary mb-1"
-          :disabled="!inputUrlHaveValue"
-          :onclick="listget"
+    <div  class="row g-0 justify-content-center">
+      <div v-if="isDownload" class="progress">
+        <p>{{ downloadmessage }}</p>
+        <div
+          class="progress-bar"
+          role="progressbar"
+          :style="{ width: downloadProgress + '%' }"
+          :aria-valuenow="downloadProgress"
+          aria-valuemin="0"
+          aria-valuemax="100"
         >
-          Search
-        </button>
+          {{ downloadProgress }}%
+        </div>
       </div>
-      <div class="mb-2 col-1">
-        <label for="Download_btn" class="form-label mb-1">&nbsp;</label>
-        <br />
-        <button
-          id="Download_btn"
-          class="btn btn-warning mb-1"
-          type="button"
-          :onclick="download"
-          :disabled="searchDatas.length <= 0"
-        >
-          Download
-        </button>
-      </div>
-    </form>
+      <form v-else class="row g-3 needs-validation">
+        <div class="mb-2 col-9">
+          <label for="youtubeurl" class="form-label mb-1">youtube影片網址</label>
+          <input
+            type="text"
+            class="form-control col-9 mb-1"
+            name="youtubeurl"
+            id="youtubeurl"
+            aria-describedby="helpId"
+            placeholder="請填入youtube影片網址"
+            v-model.trim="inputUrl"
+            ref="urlinput"
+            required
+          />
+        </div>
+        <div class="mb-2 col-1">
+          <label for="Search_btn" class="form-label mb-1">&nbsp;</label>
+          <br />
+          <button
+            id="Search_btn"
+            name="Search_btn"
+            type="button"
+            class="btn btn-primary mb-1"
+            :disabled="!inputUrlHaveValue"
+            :onclick="listget"
+          >
+            Search
+          </button>
+        </div>
+        <div class="mb-2 col-1">
+          <label for="Download_btn" class="form-label mb-1">&nbsp;</label>
+          <br />
+          <button
+            id="Download_btn"
+            class="btn btn-warning mb-1"
+            type="button"
+            :onclick="download"
+            :disabled="searchDatas.length <= 0"
+          >
+            Download
+          </button>
+        </div>
+      </form>
+    </div>
+  
+    
     <div class="row m-1">
-      <table class="table table-bordered table-hover">
+      <DataTable
+          class="table table-bordered table-hover"
+          :data="searchDatas"
+          :columns="columns"
+          :options="{ responsive: true, paging: true }"
+      />
+      <!-- <table class="table table-bordered table-hover">
         <tbody>
           <tr v-for="item in searchDatas" style="height: 15%">
             <td class="w-5 align-middle text-center">
@@ -68,7 +91,7 @@
             </td>
           </tr>
         </tbody>
-      </table>
+      </table> -->
     </div>
   </div>
 </template>
@@ -78,6 +101,14 @@ import { ref } from "vue";
 import { axiosBase, RespType } from "@/utils/ApiHelper";
 import Swal from "sweetalert2";
 import store from "@/store";
+import DataTable from 'datatables.net-vue3'
+import DataTablesCore from 'datatables.net-bs5';
+import 'datatables.net-buttons-bs5';
+import 'datatables.net-buttons/js/buttons.colVis.mjs';
+import 'datatables.net-buttons/js/buttons.html5.mjs';
+import 'datatables.net-fixedheader-bs5';
+import Responsive from "datatables.net-responsive-bs5";
+import { Start as DownloadStart, Disconnected as DownloadDisconnected,YoutubeDownloadProgress,YoutubeDownloadCompleted,GetConnectionId,WaitForConnection } from "@/utils/YoutubeDownloadHubHelper";
 
 enum UrlType {
   "PlayListType",
@@ -100,6 +131,36 @@ interface getIDmodle {
 
 let searchDatas = ref<SearchData[]>([]);
 const inputUrl = ref<string>("");
+const isDownload = ref<boolean>(false);
+DataTable.use(DataTablesCore);
+DataTable.use(Responsive); // ← 啟用 Responsive 插件
+
+const downloadProgress = ref(0);
+const downloadmessage = ref("");
+
+const handleDownloadProgress = (message:string , percentage: number) => {
+  downloadmessage.value = message;
+  downloadProgress.value = percentage;
+};
+
+const columns = [
+  {
+    title: `<input type="checkbox" :id="item.Id" v-model="item.IsCheck" />`,
+    data: "Id",
+    orderable: false, // 禁止排序
+    render: (data: any, type: any, row: { IsCheck: any }) => {
+      return `<input type="checkbox" class="row-checkbox" data-id="${data}" ${row.IsCheck ? "checked" : ""} />`;
+    },
+  },
+  { title: "縮圖", data: "ThumbnailUrl", render: (data: any, type: any, row: { Url: any; }) => {
+      return `<a href="${row.Url}" target="_blank">
+                <img style="width: 6.25rem" src="${data}" class="img-fluid img-thumbnail" alt="..." />
+              </a>`;
+    }
+  },
+  { title: "標題", data: "Title" },
+  { title: "播放時間", data: "PlayTime" }
+];
 
 const listget = async () => {
   store.dispatch("showLoading");
@@ -256,37 +317,63 @@ const playListAPICall = async (playlistid: string) => {
 
 const download = async () => {
   store.dispatch("showLoading");
-  let apihelper = axiosBase(300000, undefined, RespType.blob);
-  let nowlist = searchDatas.value;
-  //篩選有勾選的資料
-  let downloadlist = nowlist
-    .filter((x) => x.IsCheck)
-    .map(({ Id, Title }) => ({ Id, Title }));
-  if (
-    downloadlist === null ||
-    downloadlist === undefined ||
-    downloadlist.length <= 0
-  ) {
+  try
+  {
+    let apihelper = axiosBase(300000, undefined, RespType.blob);
+    let nowlist = searchDatas.value;
+    //篩選有勾選的資料
+    let downloadlist = nowlist
+      .filter((x) => x.IsCheck)
+      .map(({ Id, Title }) => ({ Id, Title }));
+    if (
+      downloadlist === null ||
+      downloadlist === undefined ||
+      downloadlist.length <= 0
+    ) {
+      store.dispatch("hideLoading");
+      Swal.fire({
+        icon: "error",
+        text: "沒有選擇任何歌曲",
+      });
+      return;
+    }
+    await DownloadStart();
+    YoutubeDownloadProgress(handleDownloadProgress);
+    YoutubeDownloadCompleted(handleDownloadCompleted);
+  
+    let result = await apihelper.post(
+      "/api/YoutubeDownload/Download",
+      {
+        ConnectionId:"",
+        SelectData:downloadlist
+      }
+    );
+    if (result !== null && result !== undefined) {
+      isDownload.value = true;
+    }
+
+  }
+  catch (error) {
+    console.error(error);
     store.dispatch("hideLoading");
+    isDownload.value = false;
     Swal.fire({
       icon: "error",
-      text: "沒有選擇任何歌曲",
+      text: "下載失敗",
     });
-    return;
   }
+};
 
-  let result = await apihelper.post(
-    "/api/YoutubeDownload/Download",
-    downloadlist,
-    {
-      responseType: "blob",
-    }
-  );
-  if (result !== null && result.data !== null) {
-    let downloaddata = result.data;
-    downloadData(result);
-  }
+const handleDownloadCompleted = (downloadLink: string) => {
+  const link = document.createElement("a");
+  link.href = downloadLink;
+  link.download = "downloaded_video.mp4";
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+  DownloadDisconnected();
   store.dispatch("hideLoading");
+  isDownload.value = false;
 };
 
 const downloadData = (data: any) => {
@@ -301,6 +388,7 @@ const downloadData = (data: any) => {
   link.download = `${timestamp}.zip`;
   document.body.appendChild(link);
   link.click();
+ 
   //  this.downloadComplate();
   //  document.getElementById('Download_Btn').disabled = false;
 };

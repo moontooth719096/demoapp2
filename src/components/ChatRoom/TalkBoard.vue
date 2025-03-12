@@ -2,7 +2,7 @@
   <div class="card d-flex ">
     <div class="card-header p-0 d-flex flex-row justify-content-center">
       <strong
-        class="name col text-truncate align-self-center"
+        class="name col text-truncate align-self-center text-center"
         >{{ chatroominfo?.nowTalkinfo?.UserName }}</strong
       >
     </div>

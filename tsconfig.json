@@ -1,7 +1,9 @@
 {
   "files": [],
   "compilerOptions": {
-    "jsx": "preserve"
+    "jsx": "preserve",
+    // other options
+    "types": ["jquery"]
   },
   "references": [
     {

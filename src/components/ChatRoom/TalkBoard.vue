@@ -1,8 +1,8 @@
 <template>
-  <div class="card d-flex ">
-    <div class="card-header p-0 d-flex flex-row justify-content-center">
+  <div class="card d-flex p-0 flex-column h-100">
+    <div class="card-header p-0 d-flex justify-content-center align-items-center">
       <strong
-        class="name col text-truncate align-self-center"
+        class="name col-1 text-truncate align-self-center"
         >{{ chatroominfo?.nowTalkinfo?.UserName }}</strong
       >
     </div>
@@ -54,7 +54,7 @@
         @click="sendmessage"
         v-bind:disabled="!chatroominfo.nowTalkinfo"
       >
-        送出
+      <i class="bi bi-send"></i>
       </button>
     </div>
   </div>

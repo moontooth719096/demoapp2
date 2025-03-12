@@ -6,6 +6,7 @@ import store from '@/store'
 import GoogleSignInPlugin from "vue3-google-signin"
 import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap";
+import "bootstrap-icons/font/bootstrap-icons.css";
 
 createApp(App)
 .use(GoogleSignInPlugin, {
@@ -14,3 +15,4 @@ createApp(App)
 .use(store)
 .use(router)
 .mount("#app");
+0

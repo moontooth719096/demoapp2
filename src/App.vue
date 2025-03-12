@@ -7,7 +7,7 @@
       <router-view></router-view>
     </main>
   </div>
-  <div id="LodingBoard" v-show="isLoading">
+  <div id="LodingBoard" v-show="isLoading" >
     <loding></loding>
   </div>
 </template>
@@ -65,5 +65,6 @@ header {
   display: flex;
   justify-content: center;
   align-items: center;
+  background-color: rgba(0, 0, 0, 0.5); // 新增的半透明背景色
 }
 </style>

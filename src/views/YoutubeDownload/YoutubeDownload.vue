@@ -62,10 +62,12 @@
     
     <div class="row m-1">
       <DataTable
+          id="SearchResultTable"
           class="table table-bordered table-hover"
           :data="searchDatas"
           :columns="columns"
           :options="{ responsive: true, paging: true }"
+          ref="SearchResultTable"
       />
       <!-- <table class="table table-bordered table-hover">
         <tbody>
@@ -97,7 +99,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from "vue";
+import { ref, onMounted, nextTick } from "vue";
 import { axiosBase, RespType } from "@/utils/ApiHelper";
 import Swal from "sweetalert2";
 import store from "@/store";
@@ -108,7 +110,8 @@ import 'datatables.net-buttons/js/buttons.colVis.mjs';
 import 'datatables.net-buttons/js/buttons.html5.mjs';
 import 'datatables.net-fixedheader-bs5';
 import Responsive from "datatables.net-responsive-bs5";
-import { Start as DownloadStart, Disconnected as DownloadDisconnected,YoutubeDownloadProgress,YoutubeDownloadCompleted,GetConnectionId,WaitForConnection } from "@/utils/YoutubeDownloadHubHelper";
+import { Start as DownloadStart, Disconnected as DownloadDisconnected} from "@/utils/YoutubeDownloadHubHelper";
+import $ from "jquery";
 
 enum UrlType {
   "PlayListType",
@@ -129,9 +132,11 @@ interface getIDmodle {
   ID?: string;
 }
 
-let searchDatas = ref<SearchData[]>([]);
+const searchDatas = ref<SearchData[]>([]);
 const inputUrl = ref<string>("");
 const isDownload = ref<boolean>(false);
+const SearchResultTable = ref<HTMLDivElement | null>(null);
+
 DataTable.use(DataTablesCore);
 DataTable.use(Responsive); // ← 啟用 Responsive 插件
 
@@ -143,9 +148,14 @@ const handleDownloadProgress = (message:string , percentage: number) => {
   downloadProgress.value = percentage;
 };
 
+const resetDownloadProgress = () => {
+  downloadProgress.value = 0;
+  downloadmessage.value = "";
+};
+
 const columns = [
   {
-    title: `<input type="checkbox" :id="item.Id" v-model="item.IsCheck" />`,
+    title: `<input type="checkbox" id="select-all" checked/>`,
     data: "Id",
     orderable: false, // 禁止排序
     render: (data: any, type: any, row: { IsCheck: any }) => {
@@ -161,6 +171,19 @@ const columns = [
   { title: "標題", data: "Title" },
   { title: "播放時間", data: "PlayTime" }
 ];
+
+const toggleAllCheckboxes = () => {
+  const isChecked = $('#select-all').is(':checked');
+  searchDatas.value.forEach(item => {
+    item.IsCheck = isChecked;
+  });
+};
+
+onMounted(() => {
+  nextTick(() => {
+    $('#SearchResultTable').on('click', '#select-all', toggleAllCheckboxes);
+  });
+});
 
 const listget = async () => {
   store.dispatch("showLoading");
@@ -319,10 +342,10 @@ const download = async () => {
   store.dispatch("showLoading");
   try
   {
-    let apihelper = axiosBase(300000, undefined, RespType.blob);
-    let nowlist = searchDatas.value;
+    const apihelper = axiosBase(300000, undefined, RespType.blob);
+    const nowlist = searchDatas.value;
     //篩選有勾選的資料
-    let downloadlist = nowlist
+    const downloadlist = nowlist
       .filter((x) => x.IsCheck)
       .map(({ Id, Title }) => ({ Id, Title }));
     if (
@@ -337,9 +360,7 @@ const download = async () => {
       });
       return;
     }
-    await DownloadStart();
-    YoutubeDownloadProgress(handleDownloadProgress);
-    YoutubeDownloadCompleted(handleDownloadCompleted);
+    DownloadStart(handleDownloadProgress,handleDownloadCompleted);
   
     let result = await apihelper.post(
       "/api/YoutubeDownload/Download",
@@ -364,33 +385,20 @@ const download = async () => {
   }
 };
 
-const handleDownloadCompleted = (downloadLink: string) => {
+const handleDownloadCompleted = (fileName:string, downloadLink: string) => {
   const link = document.createElement("a");
-  link.href = downloadLink;
-  link.download = "downloaded_video.mp4";
+  link.href = new URL(
+    downloadLink,
+  import.meta.env.VITE_API_BASE_URL
+  )?.href;
+  link.download = fileName;
   document.body.appendChild(link);
   link.click();
   document.body.removeChild(link);
   DownloadDisconnected();
   store.dispatch("hideLoading");
   isDownload.value = false;
-};
-
-const downloadData = (data: any) => {
-  const url = window.URL.createObjectURL(
-    new Blob([data.data], { type: data.headers["content-type"] })
-  );
-  let link = document.createElement("a");
-  link.style.display = "none";
-  link.href = url;
-
-  let timestamp = new Date().getTime();
-  link.download = `${timestamp}.zip`;
-  document.body.appendChild(link);
-  link.click();
- 
-  //  this.downloadComplate();
-  //  document.getElementById('Download_Btn').disabled = false;
+  resetDownloadProgress();
 };
 </script>
 

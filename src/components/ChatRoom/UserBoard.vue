@@ -52,7 +52,6 @@ import { computed } from "vue";
 import store from "@/store";
 import { ChatRoomInfo } from "@/types/ChatRoom/ChatRoomInfo";
 import { UserInfo } from "@/types/UserInfo";
-import { RefreshChat } from "@/utils/ChatRoomHubHelper";
 
 const userInfo = computed(() => store.getters.userInfo) as UserInfo;
 const chatroominfo = computed(() => store.getters.chatRoomInfo) as ChatRoomInfo;

@@ -7,7 +7,7 @@
       <router-view></router-view>
     </main>
   </div>
-  <div id="LodingBoard" v-show="isLoading">
+  <div id="LodingBoard" v-show="isLoading" >
     <loding></loding>
   </div>
 </template>
@@ -18,6 +18,7 @@ import Nav from "@/components/Nav/Nav.vue";
 import router from "./router";
 import type { Router } from "vue-router";
 import { Disconnected } from "@/utils/ChatRoomHubHelper";
+
 
 export default {
   components: {
@@ -64,5 +65,6 @@ header {
   display: flex;
   justify-content: center;
   align-items: center;
+  background-color: rgba(0, 0, 0, 0.5); // 新增的半透明背景色
 }
 </style>

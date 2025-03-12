@@ -5,6 +5,7 @@ interface ImportMetaEnv {
   readonly VITE_API_LOGINCHECK: string;
   readonly VITE_GoogleLoginUri:string;
   readonly VITE_ChatHubUri:string;
+  readonly VITE_DownloadHubUri:string;
 }
 
 interface ImportMeta {

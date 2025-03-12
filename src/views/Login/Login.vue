@@ -86,8 +86,9 @@ useOneTap({
   onError: () => {
     console.error("Error with One Tap Login");
     handleLoginError();
-  },
+  }
 });
+
 // handle success event
 const handleLoginSuccess = async (response: CredentialResponse) => {
   const { credential } = response;

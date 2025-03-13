@@ -14,7 +14,7 @@
             width: 70vw;
         }
     
-        @include respond-to(pad) {
+        @include respond-to(md) {
             .usersboard {
                 width: 10vw;
             }

@@ -1,100 +1,89 @@
 <template>
-  <div id="YoutubeDonloadApp" class="row g-0 justify-content-center">
-    <div  class="row g-0 justify-content-center">
-      <div v-if="isDownload" class="progress">
-        <p>{{ downloadmessage }}</p>
-        <div
-          class="progress-bar"
-          role="progressbar"
-          :style="{ width: downloadProgress + '%' }"
-          :aria-valuenow="downloadProgress"
-          aria-valuemin="0"
-          aria-valuemax="100"
-        >
-          {{ downloadProgress }}%
-        </div>
+  <div id="YoutubeDonloadApp">
+    <div v-if="isDownload" class="progress">
+      <p>{{ downloadmessage }}</p>
+      <div
+        class="progress-bar"
+        role="progressbar"
+        :style="{ width: downloadProgress + '%' }"
+        :aria-valuenow="downloadProgress"
+        aria-valuemin="0"
+        aria-valuemax="100"
+      >
+        {{ downloadProgress }}%
       </div>
-      <form v-else class="row g-3 needs-validation">
-        <div class="mb-2 col-9">
-          <label for="youtubeurl" class="form-label mb-1">youtube影片網址</label>
-          <input
-            type="text"
-            class="form-control col-9 mb-1"
-            name="youtubeurl"
-            id="youtubeurl"
-            aria-describedby="helpId"
-            placeholder="請填入youtube影片網址"
-            v-model.trim="inputUrl"
-            ref="urlinput"
-            required
-          />
-        </div>
-        <div class="mb-2 col-1">
-          <label for="Search_btn" class="form-label mb-1">&nbsp;</label>
-          <br />
-          <button
-            id="Search_btn"
-            name="Search_btn"
-            type="button"
-            class="btn btn-primary mb-1"
-            :disabled="!inputUrlHaveValue"
-            :onclick="listget"
-          >
-            Search
-          </button>
-        </div>
-        <div class="mb-2 col-1">
-          <label for="Download_btn" class="form-label mb-1">&nbsp;</label>
-          <br />
-          <button
-            id="Download_btn"
-            class="btn btn-warning mb-1"
-            type="button"
-            :onclick="download"
-            :disabled="searchDatas.length <= 0"
-          >
-            Download
-          </button>
-        </div>
-      </form>
     </div>
-  
-    
-    <div class="row m-1">
-      <DataTable
-          id="SearchResultTable"
-          class="table table-bordered table-hover"
-          :data="searchDatas"
-          :columns="columns"
-          :options="{ responsive: true, paging: true }"
-          ref="SearchResultTable"
+    <div v-else class="searchboard">
+      <input
+        type="text"
+        class="form-control search_input"
+        name="youtubeurl"
+        id="youtubeurl"
+        aria-describedby="helpId"
+        placeholder="請填入youtube影片網址"
+        v-model.trim="inputUrl"
+        ref="urlinput"
+        required
       />
-      <!-- <table class="table table-bordered table-hover">
-        <tbody>
-          <tr v-for="item in searchDatas" style="height: 15%">
-            <td class="w-5 align-middle text-center">
-              <input type="checkbox" :id="item.Id" v-model="item.IsCheck" />
-            </td>
-            <td class="w-auto text-center">
-              <a :href="item.Url" target="_blank">
-                <img
-                  style="width: 6.25rem"
-                  :src="item.ThumbnailUrl"
-                  class="img-fluid img-thumbnail"
-                  alt="..."
-                />
-              </a>
-            </td>
-            <td class="w-auto align-middle">
-              {{ item.Title }}
-            </td>
-            <td class="w-5 align-middle text-center">
-              {{ item.PlayTime }}
-            </td>
-          </tr>
-        </tbody>
-      </table> -->
+      <button
+        id="Search_btn"
+        name="Search_btn"
+        type="button"
+        class="search_btn btn btn-primary"
+        :disabled="!inputUrlHaveValue"
+        :onclick="listget"
+      >
+        <div class="btn_text">Search</div>
+        <i class="btn_icon bi bi-search"></i>
+      </button>
+      <button
+        id="Download_btn"
+        class="download_btn btn btn-warning text-center"
+        type="button"
+        :onclick="download"
+        :disabled="searchDatas.length <= 0"
+      >
+        <div class="btn_text">Download</div>
+        <i class="btn_icon bi bi-download"></i>
+      </button>
     </div>
+    <!-- <div class="databroad" style="width: 98%">
+      <DataTable
+        id="SearchResultTable"
+        class="table table-bordered table-hover"
+        :data="searchDatas"
+        :columns="columns"
+        :options="{ responsive: true, paging: true }"
+        ref="SearchResultTable"
+      />
+    </div> -->
+    <vue-good-table
+      class="databroad"
+      :columns="columns"
+      :rows="searchDatas"
+      :select-options="{
+        checked: true,
+        enabled: true,
+        disableSelectInfo: true,
+        selectAllByGroup: true,
+        alwaysShowSelectionInfo: false,
+      }"
+      ref="SearchResultTable"
+      compactMode
+    >
+      <template #table-row="props">
+        <span v-if="props.column.field == 'ThumbnailUrl'">
+          <a :href="props.row.Url" target="_blank">
+            <img
+              style="width: 6.25rem"
+              :src="props.row.ThumbnailUrl"
+              class="img-fluid img-thumbnail"
+              alt="..."
+            />
+          </a>
+        </span>
+      </template>
+    </vue-good-table>
   </div>
 </template>
 
@@ -103,14 +92,17 @@ import { ref, onMounted, nextTick } from "vue";
 import { axiosBase, RespType } from "@/utils/ApiHelper";
 import Swal from "sweetalert2";
 import store from "@/store";
-import DataTable from 'datatables.net-vue3'
-import DataTablesCore from 'datatables.net-bs5';
-import 'datatables.net-buttons-bs5';
-import 'datatables.net-buttons/js/buttons.colVis.mjs';
-import 'datatables.net-buttons/js/buttons.html5.mjs';
-import 'datatables.net-fixedheader-bs5';
+import DataTable from "datatables.net-vue3";
+import DataTablesCore from "datatables.net-bs5";
+import "datatables.net-buttons-bs5";
+import "datatables.net-buttons/js/buttons.colVis.mjs";
+import "datatables.net-buttons/js/buttons.html5.mjs";
+import "datatables.net-fixedheader-bs5";
 import Responsive from "datatables.net-responsive-bs5";
-import { Start as DownloadStart, Disconnected as DownloadDisconnected} from "@/utils/YoutubeDownloadHubHelper";
+import {
+  Start as DownloadStart,
+  Disconnected as DownloadDisconnected,
+} from "@/utils/YoutubeDownloadHubHelper";
 import $ from "jquery";
 
 enum UrlType {
@@ -135,7 +127,7 @@ interface getIDmodle {
 const searchDatas = ref<SearchData[]>([]);
 const inputUrl = ref<string>("");
 const isDownload = ref<boolean>(false);
-const SearchResultTable = ref<HTMLDivElement | null>(null);
+const SearchResultTable = ref<any | null>(null);
 
 DataTable.use(DataTablesCore);
 DataTable.use(Responsive); // ← 啟用 Responsive 插件
@@ -143,7 +135,29 @@ DataTable.use(Responsive); // ← 啟用 Responsive 插件
 const downloadProgress = ref(0);
 const downloadmessage = ref("");
 
-const handleDownloadProgress = (message:string , percentage: number) => {
+const columns = [
+  {
+    label: "縮圖",
+    field: "ThumbnailUrl",
+    tdClass: "w-auto text-center",
+  },
+  {
+    label: "標題",
+    field: "Title",
+    type: "string",
+    tdClass: "w-auto align-middle",
+  },
+  {
+    label: "播放時間",
+    field: "PlayTime",
+    type: "string",
+    tdClass: "w-5 align-middle text-center",
+    sortable: true,
+    firstSortType: "desc",
+  },
+];
+
+const handleDownloadProgress = (message: string, percentage: number) => {
   downloadmessage.value = message;
   downloadProgress.value = percentage;
 };
@@ -153,35 +167,40 @@ const resetDownloadProgress = () => {
   downloadmessage.value = "";
 };
 
-const columns = [
-  {
-    title: `<input type="checkbox" id="select-all" checked/>`,
-    data: "Id",
-    orderable: false, // 禁止排序
-    render: (data: any, type: any, row: { IsCheck: any }) => {
-      return `<input type="checkbox" class="row-checkbox" data-id="${data}" ${row.IsCheck ? "checked" : ""} />`;
-    },
-  },
-  { title: "縮圖", data: "ThumbnailUrl", render: (data: any, type: any, row: { Url: any; }) => {
-      return `<a href="${row.Url}" target="_blank">
-                <img style="width: 6.25rem" src="${data}" class="img-fluid img-thumbnail" alt="..." />
-              </a>`;
-    }
-  },
-  { title: "標題", data: "Title" },
-  { title: "播放時間", data: "PlayTime" }
-];
+// const columns = [
+//   {
+//     title: `<input type="checkbox" id="select-all" checked/>`,
+//     data: "Id",
+//     orderable: false, // 禁止排序
+//     render: (data: any, type: any, row: { IsCheck: any }) => {
+//       return `<input type="checkbox" class="row-checkbox" data-id="${data}" ${
+//         row.IsCheck ? "checked" : ""
+//       } />`;
+//     },
+//   },
+//   {
+//     title: "縮圖",
+//     data: "ThumbnailUrl",
+//     render: (data: any, type: any, row: { Url: any }) => {
+//       return `<a href="${row.Url}" target="_blank">
+//                 <img style="width: 6.25rem" src="${data}" class="img-fluid img-thumbnail" alt="..." />
+//               </a>`;
+//     },
+//   },
+//   { title: "標題", data: "Title" },
+//   { title: "播放時間", data: "PlayTime" },
+// ];
 
 const toggleAllCheckboxes = () => {
-  const isChecked = $('#select-all').is(':checked');
-  searchDatas.value.forEach(item => {
+  const isChecked = $("#select-all").is(":checked");
+  searchDatas.value.forEach((item) => {
     item.IsCheck = isChecked;
   });
 };
 
 onMounted(() => {
   nextTick(() => {
-    $('#SearchResultTable').on('click', '#select-all', toggleAllCheckboxes);
+    $("#SearchResultTable").on("click", "#select-all", toggleAllCheckboxes);
   });
 });
 
@@ -208,21 +227,30 @@ const listget = async () => {
 
     return;
   }
-
-  //依照Type呼叫API
-  switch (checkGet.Type) {
-    case UrlType.VedioType:
-      if (checkGet.ID !== undefined) {
-        await videoAPICall(checkGet.ID);
-      }
-      break;
-    case UrlType.PlayListType:
-      if (checkGet.ID !== undefined) {
-        await playListAPICall(checkGet.ID);
-      }
-      break;
-    default:
-      break;
+  try {
+    //依照Type呼叫API
+    switch (checkGet.Type) {
+      case UrlType.VedioType:
+        if (checkGet.ID !== undefined) {
+          await videoAPICall(checkGet.ID);
+        }
+        break;
+      case UrlType.PlayListType:
+        if (checkGet.ID !== undefined) {
+          await playListAPICall(checkGet.ID);
+        }
+        break;
+      default:
+        break;
+    }
+  } catch (error) {
+    console.error(error);
+    store.dispatch("hideLoading");
+    Swal.fire({
+      icon: "error",
+      text: "查無資料",
+    });
+    return;
   }
   store.dispatch("hideLoading");
 };
@@ -340,14 +368,13 @@ const playListAPICall = async (playlistid: string) => {
 
 const download = async () => {
   store.dispatch("showLoading");
-  try
-  {
+  try {
     const apihelper = axiosBase(300000, undefined, RespType.blob);
     const nowlist = searchDatas.value;
     //篩選有勾選的資料
-    const downloadlist = nowlist
-      .filter((x) => x.IsCheck)
-      .map(({ Id, Title }) => ({ Id, Title }));
+    const downloadlist = SearchResultTable.value.selectedRows;
+
+    // nowlist.filter((x) => x.IsCheck).map(({ Id, Title }) => ({ Id, Title }));
     if (
       downloadlist === null ||
       downloadlist === undefined ||
@@ -360,21 +387,16 @@ const download = async () => {
       });
       return;
     }
-    DownloadStart(handleDownloadProgress,handleDownloadCompleted);
-  
-    let result = await apihelper.post(
-      "/api/YoutubeDownload/Download",
-      {
-        ConnectionId:"",
-        SelectData:downloadlist
-      }
-    );
+    DownloadStart(handleDownloadProgress, handleDownloadCompleted);
+
+    let result = await apihelper.post("/api/YoutubeDownload/Download", {
+      ConnectionId: "",
+      SelectData: downloadlist,
+    });
     if (result !== null && result !== undefined) {
       isDownload.value = true;
     }
-
-  }
-  catch (error) {
+  } catch (error) {
     console.error(error);
     store.dispatch("hideLoading");
     isDownload.value = false;
@@ -385,12 +407,9 @@ const download = async () => {
   }
 };
 
-const handleDownloadCompleted = (fileName:string, downloadLink: string) => {
+const handleDownloadCompleted = (fileName: string, downloadLink: string) => {
   const link = document.createElement("a");
-  link.href = new URL(
-    downloadLink,
-  import.meta.env.VITE_API_BASE_URL
-  )?.href;
+  link.href = new URL(downloadLink, import.meta.env.VITE_API_BASE_URL)?.href;
   link.download = fileName;
   document.body.appendChild(link);
   link.click();
@@ -402,4 +421,6 @@ const handleDownloadCompleted = (fileName:string, downloadLink: string) => {
 };
 </script>
 
-<style scoped></style>
+<style scoped>
+@import "@/assets/styles/YoutubeDownload/YoutubeDownload.scss";
+</style>

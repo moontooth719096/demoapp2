@@ -7,12 +7,17 @@ import GoogleSignInPlugin from "vue3-google-signin"
 import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap";
 import "bootstrap-icons/font/bootstrap-icons.css";
+import VueGoodTableNext from 'vue-good-table-next';
+
+// import the styles 
+import 'vue-good-table-next/dist/vue-good-table-next.css';
 
 createApp(App)
-.use(GoogleSignInPlugin, {
+  .use(GoogleSignInPlugin, {
     clientId: '607977203990-5s5ur3sgv55i7gr4h8eapuuq8jvh0pim.apps.googleusercontent.com',
   })
-.use(store)
-.use(router)
-.mount("#app");
+  .use(store)
+  .use(router)
+  .use(VueGoodTableNext)
+  .mount("#app");
 0

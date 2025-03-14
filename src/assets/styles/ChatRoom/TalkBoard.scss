@@ -24,7 +24,7 @@
         .talkboard-body {
             max-width: 80%;
             height: auto;
-            @include respond-to(pad) {
+            @include respond-to(md) {
                 max-width: 60%;
             }
         }

@@ -26,6 +26,7 @@
     "lodash": "^4.17.21",
     "sweetalert2": "^11.10.7",
     "vue": "^3.4.21",
+    "vue-good-table-next": "^0.2.2",
     "vue-router": "^4.0.13",
     "vue3-google-login": "^2.0.29",
     "vue3-google-signin": "^2.1.1",

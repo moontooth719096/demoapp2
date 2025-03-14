@@ -139,12 +139,14 @@ const columns = [
   {
     label: "縮圖",
     field: "ThumbnailUrl",
+    sortable: false,
     tdClass: "w-auto text-center",
   },
   {
     label: "標題",
     field: "Title",
     type: "string",
+    sortable: false,
     tdClass: "w-auto align-middle",
   },
   {

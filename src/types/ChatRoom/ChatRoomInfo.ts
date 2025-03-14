@@ -10,7 +10,7 @@ export class ChatRoomInfo{
     connection?:HubConnection;
     chatlist?:Array<ChatInfo>;
     // nowtalkid?:string;
-    nowTalkinfo?:NowTalkInfo;
+    nowTalkinfo?:NowTalkInfo;//存放當前聊天對象的資訊
     talklist?:Array<TalkInfo>;//聊天內容清單
     nowtalk?:Array<TalkContentInfo>; //存放當前正在聊天的完整對話內容
 }

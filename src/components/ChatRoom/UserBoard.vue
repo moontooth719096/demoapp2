@@ -5,10 +5,9 @@
         class="pic rounded-circle border-1 p-1"
         :src="userInfo.PicturesPath"
       />
-      <strong
-        class="name col-0 text-truncate d-none d-md-block align-self-center"
-        >{{ userInfo.UserName }}</strong
-      >
+      <strong class="name col-0 text-truncate align-self-center">{{
+        userInfo.UserName
+      }}</strong>
     </div>
     <div class="card-body p-0 overflow-auto flex-grow-1">
       <div
@@ -17,21 +16,19 @@
         :class="{ active: user.UserID == chatroominfo.nowTalkinfo?.UserID }"
         @click="talkselect(user.UserID)"
       >
-        <img
-          class="item-pic col-12 col-md-3 img-thumbnail rounded-circle border-1 p-1"
-          :src="user.PicturesPath"
-        />
+        <div class="item-pic">
+          <img
+            class="pic img-thumbnail rounded-circle border-1 p-1"
+            :src="user.PicturesPath"
+          />
+        </div>
 
-        <div
-          class="item-center col-7 col-md-7 m-0 p-2 d-none d-md-block align-items-center"
-        >
+        <div class="item-center m-0 p-2 align-items-center">
           <strong class="d-block text-truncate">{{ user.UserName }}</strong>
           <small class="d-block text-truncate">{{ user.LastMesage }}</small>
         </div>
 
-        <div
-          class="otherinfo col-2 col-md-2 d-none d-md-block position-relative"
-        >
+        <div class="otherinfo position-relative">
           <span
             class="badge bg-primary rounded-circle position-absolute top-50 start-50 translate-middle noread"
             v-if="user.NoReadCount > 0"

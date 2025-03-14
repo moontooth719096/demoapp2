@@ -1,10 +1,12 @@
 <template>
   <div class="card d-flex p-0 flex-column h-100">
-    <div class="card-header p-0 d-flex justify-content-center align-items-center">
-      <strong
-        class="name col text-truncate align-self-center text-center"
-        >{{ chatroominfo?.nowTalkinfo?.UserName }}</strong
-      >
+    <div
+      class="card-header p-0 d-flex justify-content-center align-items-center"
+    >
+      <i class="bi bi-backspace" @click="backtochatlist"></i>
+      <strong class="name col text-truncate align-self-center text-center">{{
+        chatroominfo?.nowTalkinfo?.UserName
+      }}</strong>
     </div>
     <div
       class="card-body overflow-auto flex-grow-1"
@@ -21,7 +23,7 @@
         <img
           class="userimg img-thumbnail border-1"
           :src="
-            text.sayid  == userInfo.UserID
+            text.sayid == userInfo.UserID
               ? userInfo.PicturesPath
               : chatroominfo.nowTalkinfo?.PicturesPath
           "
@@ -54,14 +56,14 @@
         @click="sendmessage"
         v-bind:disabled="!chatroominfo.nowTalkinfo"
       >
-      <i class="bi bi-send"></i>
+        <i class="bi bi-send"></i>
       </button>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { computed, ref,watch,nextTick } from "vue";
+import { computed, ref, watch, nextTick } from "vue";
 import store from "@/store";
 import { isWhiteSpace } from "@/utils/CheckHelper";
 import {
@@ -95,8 +97,8 @@ const sendmessage = async () => {
     return;
   }
   keyonmessage.value = "";
-   // 发送消息后，确保滚动到最底部
-   nextTick(() => {
+  // 发送消息后，确保滚动到最底部
+  nextTick(() => {
     autoScrollToBottom();
   });
 };
@@ -111,6 +113,10 @@ const autoScrollToBottom = () => {
   //  if (container.scrollHeight == undefined)
   //      return;
   //  container.scrollTop = container.scrollHeight;
+};
+
+const backtochatlist = () => {
+  store.dispatch("clearNowTalk");
 };
 
 // 監聽 chatroominfo.nowtalk 的變化

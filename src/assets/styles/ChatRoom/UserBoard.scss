@@ -1,45 +1,85 @@
-@use "@/assets/styles/main.scss" as sizeset;
+@import "@/assets/styles/size.scss";
 @mixin card-hfset {
-    height: 15%;
-    min-width: 80px;
+  height: calc(1rem + 5vw);
 }
 .card {
-    .card-header,
-    .card-footer {
-        @include card-hfset;
-    }
+  .card-header,
+  .card-footer {
+    @include card-hfset;
+  }
 
-    .card-header {
-        .userinfo {
-            .pic {
-                max-height: 50px;
-                max-width: 50px;
-            }
+  .card-header {
+    .pic {
+      height: calc(1rem + 4vw);
+      aspect-ratio: 1 / 1; /* 保持正方形 */
+    }
+  }
+
+  .card-body {
+    min-width: 80px;
+    .useritem {
+      height: 20%;
+      width: 100%;
+      cursor: pointer;
+      .item-pic {
+        height: 100%;
+        width: 30%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        .pic {
+          height: 100%;
+          aspect-ratio: 1 / 1;
         }
-    }
-
-    .card-body {
-        min-width: 80px;
-        .useritem {
-            cursor: pointer;
-
-            .item-center {
-                font-size: 0.9rem;
-            }
-
-            .otherinfo {
-                .noread {
-                    font-size: 0.7rem;
-                }
-            }
-
-            &.active {
-                background-color: dodgerblue
-            }
-
-            &:hover {
-                background-color: lightskyblue
-            }
+        @include respond-to(md) {
+          width: 100%;
         }
+        @include respond-to(xs) {
+          width: 30%;
+        }
+      }
+      .item-center {
+        display: block;
+        visibility: visible;
+        height: 100%;
+        width: 60%;
+        font-size: 0.9rem;
+        margin: 0;
+        padding: 2px;
+        @include respond-to(md) {
+          display: none;
+          visibility: hidden;
+        }
+        @include respond-to(xs) {
+          display: block;
+          visibility: visible;
+        }
+      }
+
+      .otherinfo {
+        display: block;
+        visibility: visible;
+        .noread {
+          width: 10%;
+          font-size: 0.7rem;
+        }
+        @include respond-to(md) {
+          display: none;
+          visibility: hidden;
+        }
+        @include respond-to(xs) {
+          display: block;
+          visibility: visible;
+        }
+      }
+
+      &.active {
+        background-color: dodgerblue;
+      }
+
+      &:hover {
+        background-color: lightskyblue;
+      }
     }
+  }
 }

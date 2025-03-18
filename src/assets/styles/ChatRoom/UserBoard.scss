@@ -18,9 +18,22 @@
   .card-body {
     min-width: 80px;
     .useritem {
-      height: 20%;
+      // height: 20%;
       width: 100%;
       cursor: pointer;
+      display: flex;
+      align-items: center;
+      aspect-ratio: 5 / 1;
+      @include respond-to(lg) {
+        aspect-ratio: 3 / 1;
+      }
+      @include respond-to(md) {
+        aspect-ratio: 2 / 1;
+      }
+      @include respond-to(xs) {
+        aspect-ratio: 5 / 1;
+      }
+
       .item-pic {
         height: 100%;
         width: 30%;
@@ -57,18 +70,27 @@
       }
 
       .otherinfo {
-        display: block;
         visibility: visible;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        width: 10%;
         .noread {
-          width: 10%;
-          font-size: 0.7rem;
+          font-size: 0.5rem;
+          width: 90%;
+          aspect-ratio: 1 / 1; /* 保持正方形 */
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          color: white;
+          font-weight: bold;
         }
         @include respond-to(md) {
           display: none;
           visibility: hidden;
         }
         @include respond-to(xs) {
-          display: block;
+          display: flex;
           visibility: visible;
         }
       }
@@ -81,5 +103,9 @@
         background-color: lightskyblue;
       }
     }
+  }
+
+  .card-footer {
+    min-height: calc(1rem + 5vw);
   }
 }

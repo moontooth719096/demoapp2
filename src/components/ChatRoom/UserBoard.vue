@@ -29,12 +29,18 @@
         </div>
 
         <div class="otherinfo position-relative">
-          <span
-            class="badge bg-primary rounded-circle position-absolute top-50 start-50 translate-middle noread"
-            v-if="user.NoReadCount > 0"
+          <div
+            class="bg-primary rounded-circle noread"
+            v-if="user.NoReadCount > 0 && user.NoReadCount <= 99"
           >
             {{ user.NoReadCount }}
-          </span>
+          </div>
+          <div
+            class="bg-primary rounded-circle noread"
+            v-else-if="user.NoReadCount > 99"
+          >
+            {{ user.NoReadCount }}+
+          </div>
         </div>
       </div>
     </div>

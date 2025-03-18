@@ -5,12 +5,14 @@
 .card {
   height: 100%;
   flex-direction: column;
-  .card-header,
-  .card-footer {
-    @include card-hfset;
-    flex-shrink: 0; /* 避免被壓縮 */
-  }
+  // .card-header,
+  // .card-footer {
+  //   @include card-hfset;
+  //   flex-shrink: 0; /* 避免被壓縮 */
+  // }
   .card-header {
+    height: calc(1rem + 5vw);
+    flex-shrink: 0; /* 避免被壓縮 */
     .bi-backspace {
       display: none;
       visibility: hidden;
@@ -58,9 +60,43 @@
     }
   }
   .card-footer {
+    min-height: calc(1rem + 5vw);
+    max-height: 50vh;
+    width: 100%;
+    height: auto;
+    flex-shrink: 0; /* 避免被壓縮 */
+    .emojidropup {
+      height: 2.4rem;
+      .emojiboard {
+        max-width: 65vw;
+        min-width: 40vw;
+        @include respond-to(md) {
+          max-width: 95vw;
+          min-width: 65vw;
+        }
+      }
+    }
+
+    .msg-areabox {
+      resize: none;
+      overflow: hidden;
+      // height: 2.4rem;
+      min-height: 2.4rem;
+      max-height: 95%;
+      overflow-y: auto;
+    }
     .sendmsgbtn {
-      width: 5vw;
-      min-width: 58px;
+      display: none;
+      visibility: hidden;
+      height: 90%;
+      height: 2.4rem;
+      min-height: 2.4rem;
+      aspect-ratio: 1 / 1; /* 保持正方形 */
+      @include respond-to(md) {
+        display: block;
+        visibility: visible;
+        font-size: 0.6rem;
+      }
     }
   }
 }

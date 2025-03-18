@@ -88,7 +88,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, nextTick } from "vue";
+import { ref, onUnmounted, nextTick } from "vue";
 import { axiosBase, RespType } from "@/utils/ApiHelper";
 import Swal from "sweetalert2";
 import store from "@/store";
@@ -134,6 +134,10 @@ DataTable.use(Responsive); // ← 啟用 Responsive 插件
 
 const downloadProgress = ref(0);
 const downloadmessage = ref("");
+
+onUnmounted(() => {
+  DownloadDisconnected();
+});
 
 const columns = [
   {

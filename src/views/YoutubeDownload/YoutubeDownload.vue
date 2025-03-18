@@ -88,7 +88,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, nextTick } from "vue";
+import { ref, onUnmounted, nextTick } from "vue";
 import { axiosBase, RespType } from "@/utils/ApiHelper";
 import Swal from "sweetalert2";
 import store from "@/store";
@@ -135,6 +135,10 @@ DataTable.use(Responsive); // ← 啟用 Responsive 插件
 const downloadProgress = ref(0);
 const downloadmessage = ref("");
 
+onUnmounted(() => {
+  DownloadDisconnected();
+});
+
 const columns = [
   {
     label: "縮圖",
@@ -168,43 +172,6 @@ const resetDownloadProgress = () => {
   downloadProgress.value = 0;
   downloadmessage.value = "";
 };
-
-// const columns = [
-//   {
-//     title: `<input type="checkbox" id="select-all" checked/>`,
-//     data: "Id",
-//     orderable: false, // 禁止排序
-//     render: (data: any, type: any, row: { IsCheck: any }) => {
-//       return `<input type="checkbox" class="row-checkbox" data-id="${data}" ${
-//         row.IsCheck ? "checked" : ""
-//       } />`;
-//     },
-//   },
-//   {
-//     title: "縮圖",
-//     data: "ThumbnailUrl",
-//     render: (data: any, type: any, row: { Url: any }) => {
-//       return `<a href="${row.Url}" target="_blank">
-//                 <img style="width: 6.25rem" src="${data}" class="img-fluid img-thumbnail" alt="..." />
-//               </a>`;
-//     },
-//   },
-//   { title: "標題", data: "Title" },
-//   { title: "播放時間", data: "PlayTime" },
-// ];
-
-const toggleAllCheckboxes = () => {
-  const isChecked = $("#select-all").is(":checked");
-  searchDatas.value.forEach((item) => {
-    item.IsCheck = isChecked;
-  });
-};
-
-onMounted(() => {
-  nextTick(() => {
-    $("#SearchResultTable").on("click", "#select-all", toggleAllCheckboxes);
-  });
-});
 
 const listget = async () => {
   store.dispatch("showLoading");

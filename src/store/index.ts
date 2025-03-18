@@ -54,7 +54,7 @@ export default createStore<statetype>({
     setNowtalkInfo(state, payload:NowTalkInfo) {
       if(state.chatRoomInfo){
         state.chatRoomInfo.nowTalkinfo = payload;
-        const talk= state.chatRoomInfo.talklist?.find(x=>x.talkid ==payload.UserID) as TalkInfo;
+        const talk= state.chatRoomInfo.talklist?.find(x=>x.talkid ==payload?.UserID) as TalkInfo;
         if(talk){
           state.chatRoomInfo.nowtalk = talk.talks;
         }else{
@@ -236,6 +236,10 @@ export default createStore<statetype>({
         commit("setNowtalk",[]);
       }
     },
+    async clearNowTalk({ commit }) {
+      commit("setNowtalk",[]);
+      commit("setNowtalkInfo",null);
+    }
   },
   // getters: 定義獲取狀態的方法（類似於計算屬性）
   getters: {

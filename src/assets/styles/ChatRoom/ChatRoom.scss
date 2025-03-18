@@ -1,25 +1,47 @@
 @import "@/assets/styles/size.scss";
-.chatroomdiv{
+.chatroomdiv {
+  height: 100%;
+  width: 100%;
+  .usersboard {
     height: 100%;
-    width: 100%;
+    width: 30vw;
+    min-width: 80px;
+  }
+
+  .talkboard {
+    min-width: 80px;
+    height: 100%;
+    width: 70vw;
+  }
+
+  @include respond-to(md) {
     .usersboard {
-            height: 100%;
-            width: 30vw;
-            min-width: 80px;
-        }
-    
-        .talkboard {
-            min-width: 80px;
-            height: 100%;
-            width: 70vw;
-        }
-    
-        @include respond-to(md) {
-            .usersboard {
-                width: 10vw;
-            }
-            .talkboard {
-                width: 90vw;
-            }
-        }
+      width: 20vw;
+    }
+    .talkboard {
+      width: 80vw;
+    }
+  }
+  @include respond-to(xs) {
+    .usersboard {
+      width: 100vw;
+    }
+    .talkboard {
+      width: 100vw;
+    }
+  }
+}
+
+.smallshow {
+  @include respond-to(xs) {
+    display: block;
+    visibility: visible;
+  }
+}
+
+.smallhidden {
+  @include respond-to(xs) {
+    display: none;
+    visibility: hidden;
+  }
 }

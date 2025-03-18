@@ -67,6 +67,9 @@ completedCallback: (fileName:string, downloadLink: string) => void) {
 // }
 
 export function Disconnected() {
+  if (youtubedDwnloadConnection.state == HubConnectionState.Disconnected) {
+    return;
+  }
   youtubedDwnloadConnection.stop();
 }
 //取得連線ID

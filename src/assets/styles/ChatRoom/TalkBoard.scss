@@ -3,23 +3,30 @@
   height: calc(1rem + 5vw);
 }
 .card {
+  display: flex;
   height: 100%;
   flex-direction: column;
-  // .card-header,
-  // .card-footer {
-  //   @include card-hfset;
-  //   flex-shrink: 0; /* 避免被壓縮 */
-  // }
-  .card-header {
+  .card-header,
+  .card-footer {
     height: calc(1rem + 5vw);
     flex-shrink: 0; /* 避免被壓縮 */
+    min-height: calc(1rem + 5vw);
+    align-items: center;
+    @include respond-to(xxl) {
+      height: calc(1rem + 2vw);
+      min-height: calc(1rem + 2vw);
+    }
+  }
+  .card-header {
+    display: flex;
+    justify-content: space-between;
     .bi-backspace {
-      display: none;
+      // display: none;
       visibility: hidden;
       cursor: pointer;
       font-size: 1.5rem;
       @include respond-to(xs) {
-        display: block;
+        // display: block;
         visibility: visible;
       }
     }
@@ -60,11 +67,10 @@
     }
   }
   .card-footer {
-    min-height: calc(1rem + 5vw);
+    // min-height: calc(1rem + 5vw);
     max-height: 50vh;
     width: 100%;
     height: auto;
-    flex-shrink: 0; /* 避免被壓縮 */
     .emojidropup {
       height: 2.4rem;
       .emojiboard {

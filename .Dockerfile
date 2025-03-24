@@ -16,5 +16,16 @@ COPY . .
 # 建置 Vite 應用
 RUN npm run build
 
-# 將生成的靜態文件複製到宿主機
-CMD ["sh", "-c", "cp -r /app/dist /output"]
+# 使用 Nginx 作為最終映像檔
+FROM nginx:alpine AS runtime
+WORKDIR /usr/share/nginx/html
+
+# 複製 `dist` 目錄到 Nginx 的靜態文件目錄
+COPY --from=builder /app/dist .
+COPY nginx.conf /etc/nginx/conf.d/default.conf
+
+# 暴露 Nginx 預設的 HTTP 端口
+EXPOSE 80
+
+# 啟動 Nginx
+CMD ["nginx", "-g", "daemon off;"]

@@ -92,18 +92,10 @@ import { ref, onUnmounted, nextTick } from "vue";
 import { axiosBase, RespType } from "@/utils/ApiHelper";
 import Swal from "sweetalert2";
 import store from "@/store";
-import DataTable from "datatables.net-vue3";
-import DataTablesCore from "datatables.net-bs5";
-import "datatables.net-buttons-bs5";
-import "datatables.net-buttons/js/buttons.colVis.mjs";
-import "datatables.net-buttons/js/buttons.html5.mjs";
-import "datatables.net-fixedheader-bs5";
-import Responsive from "datatables.net-responsive-bs5";
 import {
   Start as DownloadStart,
   Disconnected as DownloadDisconnected,
 } from "@/utils/YoutubeDownloadHubHelper";
-import $ from "jquery";
 
 enum UrlType {
   "PlayListType",
@@ -128,9 +120,6 @@ const searchDatas = ref<SearchData[]>([]);
 const inputUrl = ref<string>("");
 const isDownload = ref<boolean>(false);
 const SearchResultTable = ref<any | null>(null);
-
-DataTable.use(DataTablesCore);
-DataTable.use(Responsive); // ← 啟用 Responsive 插件
 
 const downloadProgress = ref(0);
 const downloadmessage = ref("");

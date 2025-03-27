@@ -3,12 +3,14 @@ import store from "@/store";
 import { AppLoginCheck } from "@/utils/Auth";
 import Home from "@/views/Home/Home.vue";
 import Login from "@/views/Login/Login.vue";
+import LogViewer from '@/views/LogViewer/LogViewer.vue';
 
 export enum PathKeyType {
-  "Home" = "Home",
+  "Home" = "/",
   "Login" = "Login",
   "YoutubeDownload" = "YoutubeDownload",
   "ChatRoom" = "ChatRoom",
+  "LogView" = "LogView",
 }
 
 const routes: Array<vueRouter.RouteRecordRaw> = [
@@ -16,6 +18,7 @@ const routes: Array<vueRouter.RouteRecordRaw> = [
   { path: "/Login", name: PathKeyType.Login.toString(), component: Login},
   { path: "/YoutubeDownload", name: PathKeyType.YoutubeDownload.toString(), component: () => import("@/views/YoutubeDownload/YoutubeDownload.vue") },
   { path: "/ChatRoom", name: PathKeyType.ChatRoom.toString(), component: () => import("@/views/ChatRoom/ChatRoom.vue") },
+  { path: '/LogView',  name: PathKeyType.LogView.toString(), component: () => import("@/views/LogViewer/LogViewer.vue")  },
 ];
 
 const router = vueRouter.createRouter({

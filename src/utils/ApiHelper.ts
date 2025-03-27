@@ -32,6 +32,7 @@ export function axiosBase(timeout?: number, contenttype?: ContentType, resp?: Re
       Authorization: getTokenCookieBearer(),
     },
     responseType: resp,
+    withCredentials: true
   });
 
   apihelper.interceptors.request.use(

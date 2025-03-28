@@ -2,12 +2,12 @@
   <header>
     <nav-component v-if="isShowNav && !isLoginPage"></nav-component>
   </header>
-  <div class="container-fluid p-0">
+  <div class="viewbody container-fluid p-0">
     <main id="main" role="main">
       <router-view></router-view>
     </main>
   </div>
-  <div id="LodingBoard" v-show="isLoading" >
+  <div id="LodingBoard" v-show="isLoading">
     <loding></loding>
   </div>
 </template>
@@ -18,7 +18,6 @@ import Nav from "@/components/Nav/Nav.vue";
 import router from "./router";
 import type { Router } from "vue-router";
 import { Disconnected } from "@/utils/ChatRoomHubHelper";
-
 
 export default {
   components: {
@@ -31,10 +30,7 @@ export default {
       return router;
     },
     isLoginPage(): boolean {
-      return (
-        router.currentRoute.value.path === "/Login" ||
-        router.currentRoute.value.name === "Login"
-      );
+      return router.currentRoute.value.path === "/Login" || router.currentRoute.value.name === "Login";
     },
   },
   beforeUnmount() {
@@ -43,13 +39,20 @@ export default {
 };
 </script>
 <style lang="scss">
+@import "@/assets/styles/size.scss";
 header {
-  height: 10%;
-  width: 100%;
+  height: 5vh;
+  width: 100vw;
+  @include respond-to(lg) {
+    height: 7vh;
+  }
 }
-.container-fluid {
-  height: 90%;
+.viewbody {
+  height: 95vh;
   width: 100%;
+  @include respond-to(lg) {
+    height: 93vh;
+  }
   #main {
     height: 100%;
     width: 100%;

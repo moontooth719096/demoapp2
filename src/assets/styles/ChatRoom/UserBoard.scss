@@ -1,6 +1,9 @@
 @import "@/assets/styles/size.scss";
 @mixin card-hfset {
   height: calc(1rem + 5vw);
+  @include respond-to(xxl) {
+    height: calc(1rem + 2vw);
+  }
 }
 .card {
   .card-header,
@@ -12,18 +15,23 @@
     .pic {
       height: calc(1rem + 4vw);
       aspect-ratio: 1 / 1; /* 保持正方形 */
+      @include respond-to(xxl) {
+        height: calc(1rem + 1.5vw);
+      }
     }
   }
 
   .card-body {
     min-width: 80px;
     .useritem {
-      // height: 20%;
       width: 100%;
       cursor: pointer;
       display: flex;
       align-items: center;
       aspect-ratio: 5 / 1;
+      @include respond-to(xxl) {
+        aspect-ratio: 5 / 1;
+      }
       @include respond-to(lg) {
         aspect-ratio: 3 / 1;
       }
@@ -103,9 +111,5 @@
         background-color: lightskyblue;
       }
     }
-  }
-
-  .card-footer {
-    min-height: calc(1rem + 5vw);
   }
 }

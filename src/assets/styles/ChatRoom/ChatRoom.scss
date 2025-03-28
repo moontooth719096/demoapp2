@@ -14,6 +14,15 @@
     width: 70vw;
   }
 
+  @include respond-to(xxl) {
+    .usersboard {
+      width: 15vw;
+    }
+    .talkboard {
+      width: 85vw;
+    }
+  }
+
   @include respond-to(md) {
     .usersboard {
       width: 20vw;

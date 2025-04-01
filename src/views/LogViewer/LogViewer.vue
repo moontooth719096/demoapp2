@@ -20,6 +20,7 @@
 import { ref, onMounted } from "vue";
 import { axiosBase } from "@/utils/ApiHelper";
 import { LogViewDetail } from "@/types/LogView/LogViewDetail"; // 新增匯入
+import store from "@/store";
 
 const logs = ref<LogViewDetail[]>([]);
 const columns = ref([
@@ -38,6 +39,7 @@ const columns = ref([
 ]);
 
 const fetchLogs = async () => {
+  store.dispatch("showLoading");
   let apihelper = axiosBase();
   try {
     const { data } = await apihelper.get<LogViewDetail[]>("/api/Log/read");
@@ -50,6 +52,8 @@ const fetchLogs = async () => {
     }
   } catch (error) {
     console.error("Error fetching logs:", error);
+  } finally {
+    store.dispatch("hideLoading");
   }
 };
 

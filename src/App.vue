@@ -30,7 +30,10 @@ export default {
       return router;
     },
     isLoginPage(): boolean {
-      return router.currentRoute.value.path === "/Login" || router.currentRoute.value.name === "Login";
+      return (
+        router.currentRoute.value.path === "/Login" ||
+        router.currentRoute.value.name === "Login"
+      );
     },
   },
   beforeUnmount() {

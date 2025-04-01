@@ -96,6 +96,7 @@ import {
   Start as DownloadStart,
   Disconnected as DownloadDisconnected,
 } from "@/utils/YoutubeDownloadHubHelper";
+import { Log } from "@/utils/Log";
 
 enum UrlType {
   "PlayListType",
@@ -203,14 +204,16 @@ const listget = async () => {
     }
   } catch (error) {
     console.error(error);
-    store.dispatch("hideLoading");
+    Log(`清單查詢發生例外:${error}`, 4);
     Swal.fire({
       icon: "error",
-      text: "查無資料",
+      text: "清單查詢發生例外",
     });
     return;
+  } finally {
+    //確保無論如何都會隱藏loading
+    store.dispatch("hideLoading");
   }
-  store.dispatch("hideLoading");
 };
 
 const getID = (url: string): getIDmodle => {
@@ -281,7 +284,7 @@ const inputUrlHaveValue = () => {
   }
 };
 const videoAPICall = async (videoid: string) => {
-  let apihelper = axiosBase();
+  let apihelper = axiosBase(10000);
   const inputurlencode = encodeURI(videoid);
   const params = {
     VideoID: videoid,
@@ -303,7 +306,7 @@ const videoAPICall = async (videoid: string) => {
 };
 
 const playListAPICall = async (playlistid: string) => {
-  let apihelper = axiosBase();
+  let apihelper = axiosBase(10000);
   const inputurlencode = encodeURI(playlistid);
   const params = {
     PlaylistId: playlistid,
@@ -338,7 +341,6 @@ const download = async () => {
       downloadlist === undefined ||
       downloadlist.length <= 0
     ) {
-      store.dispatch("hideLoading");
       Swal.fire({
         icon: "error",
         text: "沒有選擇任何歌曲",
@@ -356,12 +358,14 @@ const download = async () => {
     }
   } catch (error) {
     console.error(error);
-    store.dispatch("hideLoading");
+    Log(`下載失敗:${error}`, 4);
     isDownload.value = false;
     Swal.fire({
       icon: "error",
-      text: "下載失敗",
+      text: "下載發生例外",
     });
+  } finally {
+    store.dispatch("hideLoading");
   }
 };
 

@@ -9,7 +9,6 @@ import { getTokenCookie } from "@/utils/cookie";
 import { ChatInfo } from "@/types/ChatRoom/ChatInfo";
 import { UserInfo } from "@/types/UserInfo";
 import type { SingleTalkInfo } from "@/types/ChatRoom/TalkInfo";
-import _ from "lodash";
 import { Log } from "@/utils/Log";
 
 const userInfo = computed(() => store.getters.userInfo) as UserInfo;

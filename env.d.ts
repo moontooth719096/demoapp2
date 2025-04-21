@@ -7,6 +7,9 @@ interface ImportMetaEnv {
   readonly VITE_ChatHubUri: string;
   readonly VITE_DownloadHubUri: string;
   readonly VITE_LogUri: string;
+  readonly VITE_GoogleAPIKey: string;
+  readonly VITE_GoogleClientId: string;
+  readonly VITE_GoogleAppId: string;
 }
 
 interface ImportMeta {

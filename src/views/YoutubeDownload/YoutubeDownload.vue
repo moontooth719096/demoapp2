@@ -121,10 +121,9 @@ import { UserInfo } from "@/types/UserInfo";
 
 const userInfo = computed(() => store.getters.userInfo) as UserInfo;
 
-const clientId =
-  "607977203990-5s5ur3sgv55i7gr4h8eapuuq8jvh0pim.apps.googleusercontent.com";
-const developerKey = "AIzaSyDvNQoLBk9zBR5BGU4ksxJh-_UuCiH2SQo";
-const appId = "607977203990";
+const clientId = import.meta.env.VITE_GoogleClientId;
+const developerKey = import.meta.env.VITE_GoogleAPIKey;
+const appId = import.meta.env.VITE_GoogleAppId;
 
 const currentGAuthToken = ref("");
 

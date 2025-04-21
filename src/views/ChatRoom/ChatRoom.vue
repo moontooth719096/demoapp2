@@ -10,7 +10,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, nextTick, computed } from "vue";
+import { computed } from "vue";
 import userboard from "@/components/ChatRoom/UserBoard.vue";
 import talkboard from "@/components/ChatRoom/TalkBoard.vue";
 import store from "@/store";

@@ -31,7 +31,7 @@
         type="button"
         class="search_btn btn btn-primary"
         :disabled="!inputUrlHaveValue"
-        :onclick="listget"
+        @click="listget"
       >
         <div class="btn_text">Search</div>
         <i class="btn_icon bi bi-search"></i>
@@ -40,30 +40,49 @@
         id="Download_btn"
         class="download_btn btn btn-warning text-center"
         type="button"
-        :onclick="download"
-        :disabled="searchDatas.length <= 0"
+        @click="download(1)"
+        v-if="searchDatas.length > 0"
       >
         <div class="btn_text">Download</div>
         <i class="btn_icon bi bi-download"></i>
       </button>
+      <button
+        id="GDownload_btn"
+        class="download_btn btn btn-outline-info text-center"
+        type="button"
+        @click="Gdownload"
+        v-if="searchDatas.length > 0"
+      >
+        <img
+          style="width: 1rem"
+          src="@/assets/images/googledriveicon.png"
+          class="img-fluid"
+          alt="..."
+        />
+      </button>
+      <drive-picker
+        :client-id="clientId"
+        :developer-key="developerKey"
+        :app-id="appId"
+        ref="googlepicker"
+        v-if="showGDownload"
+      >
+        <drive-picker-docs-view
+          select-folder-enabled="true"
+          include-folders="true"
+          owned-by-me="true"
+          mime-types="application/vnd.google-apps.folder"
+          multi-select-enabled="false"
+        ></drive-picker-docs-view>
+      </drive-picker>
     </div>
-    <!-- <div class="databroad" style="width: 98%">
-      <DataTable
-        id="SearchResultTable"
-        class="table table-bordered table-hover"
-        :data="searchDatas"
-        :columns="columns"
-        :options="{ responsive: true, paging: true }"
-        ref="SearchResultTable"
-      />
-    </div> -->
     <vue-good-table
       class="databroad"
       :columns="columns"
       :rows="searchDatas"
       :select-options="{
         checked: true,
-        enabled: true,
+        enabled: tablecheckedEnable,
         disableSelectInfo: true,
         selectAllByGroup: true,
         alwaysShowSelectionInfo: false,
@@ -88,7 +107,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onUnmounted, nextTick } from "vue";
+import { ref, onUnmounted, computed, onMounted, nextTick, watch } from "vue";
 import { axiosBase, RespType } from "@/utils/ApiHelper";
 import Swal from "sweetalert2";
 import store from "@/store";
@@ -97,6 +116,16 @@ import {
   Disconnected as DownloadDisconnected,
 } from "@/utils/YoutubeDownloadHubHelper";
 import { Log } from "@/utils/Log";
+import "@googleworkspace/drive-picker-element";
+import { UserInfo } from "@/types/UserInfo";
+
+const userInfo = computed(() => store.getters.userInfo) as UserInfo;
+
+const clientId = import.meta.env.VITE_GoogleClientId;
+const developerKey = import.meta.env.VITE_GoogleAPIKey;
+const appId = import.meta.env.VITE_GoogleAppId;
+
+const currentGAuthToken = ref("");
 
 enum UrlType {
   "PlayListType",
@@ -124,9 +153,28 @@ const SearchResultTable = ref<any | null>(null);
 
 const downloadProgress = ref(0);
 const downloadmessage = ref("");
+const googlepicker = ref<any | null>(null);
+const showGDownload = ref(false);
+const authToken = ref<string | undefined>("");
+const selectFileID = ref<string | undefined>("");
+const tablecheckedEnable = ref<boolean>(true);
+
+onMounted(() => {
+  authToken.value =
+    userInfo.ThirdPlatform == "Google" ? userInfo.ThirdToken : "";
+});
 
 onUnmounted(() => {
   DownloadDisconnected();
+  if (googlepicker.value) {
+    // 先移除舊的監聽，避免重複
+    googlepicker.value.removeEventListener("picker:picked", onPicked);
+    googlepicker.value.removeEventListener("picker:error", onError);
+    googlepicker.value.removeEventListener(
+      "picker:authenticated",
+      onAuthenticated
+    );
+  }
 });
 
 const columns = [
@@ -327,8 +375,9 @@ const playListAPICall = async (playlistid: string) => {
   }
 };
 
-const download = async () => {
+const download = async (mode: number) => {
   store.dispatch("showLoading");
+  tablecheckedEnable.value = false;
   try {
     const apihelper = axiosBase(300000, undefined, RespType.blob);
     const nowlist = searchDatas.value;
@@ -347,11 +396,15 @@ const download = async () => {
       });
       return;
     }
-    DownloadStart(handleDownloadProgress, handleDownloadCompleted);
+
+    DownloadStart(mode, handleDownloadProgress, handleDownloadCompleted);
 
     let result = await apihelper.post("/api/YoutubeDownload/Download", {
       ConnectionId: "",
       SelectData: downloadlist,
+      Mode: mode,
+      GAuthToken: currentGAuthToken.value,
+      SelectFileID: selectFileID.value,
     });
     if (result !== null && result !== undefined) {
       isDownload.value = true;
@@ -360,6 +413,7 @@ const download = async () => {
     console.error(error);
     Log(`下載失敗:${error}`, 4);
     isDownload.value = false;
+    tablecheckedEnable.value = true;
     Swal.fire({
       icon: "error",
       text: "下載發生例外",
@@ -369,18 +423,71 @@ const download = async () => {
   }
 };
 
-const handleDownloadCompleted = (fileName: string, downloadLink: string) => {
-  const link = document.createElement("a");
-  link.href = new URL(downloadLink, import.meta.env.VITE_API_BASE_URL)?.href;
-  link.download = fileName;
-  document.body.appendChild(link);
-  link.click();
-  document.body.removeChild(link);
+const Gdownload = async () => {
+  showGDownload.value = true;
+  if (!googlepicker.value.visible) {
+    googlepicker.value.visible = true;
+  }
+};
+
+const handleDownloadCompleted = (
+  mode: number,
+  fileName: string,
+  downloadLink: string
+) => {
+  if (mode === 1) {
+    const link = document.createElement("a");
+    link.href = new URL(downloadLink, import.meta.env.VITE_API_BASE_URL)?.href;
+    link.download = fileName;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  } else {
+    showGDownload.value = false;
+    Swal.fire({
+      icon: "success",
+      text: "已儲存至GoogleDrive",
+    });
+  }
+
   DownloadDisconnected();
   store.dispatch("hideLoading");
   isDownload.value = false;
+  tablecheckedEnable.value = true;
   resetDownloadProgress();
 };
+
+const onPicked = async (event: any) => {
+  // event.detail.files 取得選取的檔案
+  const a = 1;
+  selectFileID.value = event.detail.docs[0].id;
+  console.log(selectFileID.value);
+  if (selectFileID.value) {
+    await download(2);
+  }
+};
+
+const onError = (event: any) => {
+  const a = 1;
+  console.log(event.detail.files);
+};
+const onAuthenticated = (event: any) => {
+  currentGAuthToken.value = event.detail?.token;
+};
+watch(showGDownload, async (val) => {
+  if (val) {
+    await nextTick();
+    if (googlepicker.value) {
+      // 加入新的監聽
+      googlepicker.value.addEventListener("picker:picked", onPicked);
+      googlepicker.value.addEventListener("picker:error", onError);
+      googlepicker.value.addEventListener(
+        "picker:authenticated",
+        onAuthenticated
+      );
+    }
+  }
+});
 </script>
 
 <style scoped>

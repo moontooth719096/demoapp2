@@ -1,4 +1,8 @@
-import { HttpTransportType, HubConnectionBuilder, HubConnectionState } from "@microsoft/signalr";
+import {
+  HttpTransportType,
+  HubConnectionBuilder,
+  HubConnectionState,
+} from "@microsoft/signalr";
 import { getTokenCookie } from "@/utils/cookie";
 
 const youtubedownloadhuburl = new URL(
@@ -17,37 +21,51 @@ const youtubedDwnloadConnection = new HubConnectionBuilder()
       }
     },
     skipNegotiation: true,
-    transport: HttpTransportType.WebSockets//強制使用WebSockets
+    transport: HttpTransportType.WebSockets, //強制使用WebSockets
   })
   .withAutomaticReconnect()
   .build();
 
 //建立下載連線
-export function Start(ProgressCallback: (message:string , percentage: number) => void,
-completedCallback: (fileName:string, downloadLink: string) => void) {
+export function Start(
+  mode: number,
+  ProgressCallback: (message: string, percentage: number) => void,
+  completedCallback: (
+    mode: number,
+    fileName: string,
+    downloadLink: string
+  ) => void
+) {
   if (youtubedDwnloadConnection.state !== HubConnectionState.Disconnected) {
-    console.log('下載已經連線');
+    console.log("下載已經連線");
     return Promise.resolve();
   }
 
-  youtubedDwnloadConnection.on("YoutubeDownloadProgress", (message:string ,percentage: number) => {
-    console.log('YoutubeDownloadProgress:', message, percentage);
-    ProgressCallback(message,percentage);
-  })
+  youtubedDwnloadConnection.on(
+    "YoutubeDownloadProgress",
+    (message: string, percentage: number) => {
+      console.log("YoutubeDownloadProgress:", message, percentage);
+      ProgressCallback(message, percentage);
+    }
+  );
 
-  youtubedDwnloadConnection.on("YoutubeDownloadCompleted", (fileName:string, downloadLink: string) => {
-    console.log('YoutubeDownloadCompleted:', downloadLink);
-    console.log('YoutubeDownloadCompletedfileName:', fileName);
-    completedCallback(fileName,downloadLink);
-  })
+  youtubedDwnloadConnection.on(
+    "YoutubeDownloadCompleted",
+    (fileName: string, downloadLink: string) => {
+      console.log("YoutubeDownloadCompleted:", downloadLink);
+      console.log("YoutubeDownloadCompletedfileName:", fileName);
+      completedCallback(mode, fileName, downloadLink);
+    }
+  );
 
-  youtubedDwnloadConnection.start() 
-  .then(() => {
-      console.log('聊天室連接已建立');
-  })
-  .catch((error: any) => {
-      console.error('聊天室連接失敗:', error);
-  });
+  youtubedDwnloadConnection
+    .start()
+    .then(() => {
+      console.log("聊天室連接已建立");
+    })
+    .catch((error: any) => {
+      console.error("聊天室連接失敗:", error);
+    });
 }
 
 // 等待連線成功
@@ -76,7 +94,7 @@ export function Disconnected() {
 // export async function GetConnectionId(): Promise<string | null> {
 //   return await youtubedDwnloadConnection.connectionId;
 // }
-// 
+//
 // export const YoutubeDownloadProgress = (callback: (message:string , percentage: number) => void) => {
 //   youtubedDwnloadConnection.on("YoutubeDownloadProgress", (message:string ,percentage: number) => {
 //     console.log('YoutubeDownloadProgress:', message, percentage);
@@ -91,4 +109,4 @@ export function Disconnected() {
 //   });
 // };
 
-export default { Start, Disconnected};
+export default { Start, Disconnected };

@@ -12,6 +12,7 @@
     "build:production": "vite build --mode production"
   },
   "dependencies": {
+    "@googleworkspace/drive-picker-element": "^0.4.1",
     "@microsoft/signalr": "^8.0.7",
     "@popperjs/core": "^2.11.8",
     "axios": "^1.6.8",

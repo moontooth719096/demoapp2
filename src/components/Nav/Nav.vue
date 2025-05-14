@@ -1,5 +1,6 @@
 <template>
-  <nav style="height:100%"
+  <nav
+    style="height: 100%"
     class="navbar navbar-expand-sm navbar-toggleable-sm border-bottom box-shadow bg-puttinghead"
   >
     <div class="container-fluid">
@@ -38,6 +39,9 @@
           <li class="nav-item">
             <button class="btn btn-primary" @click="AppLogOut">登出</button>
           </li>
+          <!-- <li class="nav-item">
+            <button @click="toggleDarkMode">切換暗黑模式</button>
+          </li> -->
         </ul>
       </div>
     </div>
@@ -45,12 +49,26 @@
 </template>
 
 <script setup lang="ts">
+import { ref } from "vue";
 import { AppLogOut } from "@/utils/Auth";
 
-// const logOut = () => {
-//   // google.accounts.id.disableAutoSelect();
-//   AppLogOut();
-// };
+const isDarkMode = ref<boolean>(false);
+
+const toggleDarkMode = () => {
+  isDarkMode.value = !isDarkMode.value;
+  if (isDarkMode.value) {
+    document.body.classList.add("dark-mode");
+  } else {
+    document.body.classList.remove("dark-mode");
+  }
+};
 </script>
 
-<style scoped></style>
+<style scoped>
+
+button {
+  margin-left: auto;
+  padding: 0.5rem 1rem;
+  cursor: pointer;
+}
+</style>

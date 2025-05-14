@@ -162,6 +162,7 @@ const tablecheckedEnable = ref<boolean>(true);
 onMounted(() => {
   authToken.value =
     userInfo.ThirdPlatform == "Google" ? userInfo.ThirdToken : "";
+    console.log(import.meta.env.VITE_GoogleClientId);
 });
 
 onUnmounted(() => {

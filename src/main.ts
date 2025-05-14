@@ -8,6 +8,7 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap";
 import "bootstrap-icons/font/bootstrap-icons.css";
 import VueGoodTableNext from "vue-good-table-next";
+import "./assets/styles/dark-mode.scss";
 
 // import the styles
 import "vue-good-table-next/dist/vue-good-table-next.css";

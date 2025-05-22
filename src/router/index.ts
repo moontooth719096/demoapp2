@@ -3,6 +3,7 @@ import store from "@/store";
 import { AppLoginCheck } from "@/utils/Auth";
 import Home from "@/views/Home/Home.vue";
 import Login from "@/views/Login/Login.vue";
+import BCC from "@/views/BakingConversionCalculator.vue";
 
 export enum PathKeyType {
   "Home" = "/",
@@ -10,6 +11,7 @@ export enum PathKeyType {
   "YoutubeDownload" = "YoutubeDownload",
   "ChatRoom" = "ChatRoom",
   "LogView" = "LogView",
+  "BCC" = "BCC",
 }
 
 const routes: Array<vueRouter.RouteRecordRaw> = [
@@ -30,6 +32,11 @@ const routes: Array<vueRouter.RouteRecordRaw> = [
     name: PathKeyType.LogView.toString(),
     component: () => import("@/views/LogViewer/LogViewer.vue"),
   },
+  {
+    path: "/BCC",
+    name: PathKeyType.BCC.toString(),
+    component: () => BCC,
+  },
 ];
 
 const router = vueRouter.createRouter({
@@ -38,7 +45,10 @@ const router = vueRouter.createRouter({
 });
 
 router.beforeEach(async (to, from, next) => {
-  if (to.name === "Login") next();
+  if (to.name === "Login") {
+    next();
+    return;
+  }
   if (await AppLoginCheck()) {
     store.dispatch("showLoading");
     next();

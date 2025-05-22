@@ -45,7 +45,7 @@ export default {
 @import "@/assets/styles/size.scss";
 header {
   height: 5vh;
-  width: 100vw;
+  width: 100%;
   @include respond-to(lg) {
     height: 7vh;
   }

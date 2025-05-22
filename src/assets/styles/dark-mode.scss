@@ -2,22 +2,20 @@
 body.dark-mode {
   background-color: #121212;
   color: #ffffff;
-}
-
-/* 針對按鈕、標題等元素的暗黑模式樣式 */
-button {
-  background-color: #333333;
-  color: #ffffff;
-  border: 1px solid #444444;
-}
-
-h1,
-h2,
-h3,
-h4,
-h5,
-h6 {
-  color: #ffffff;
+  /* 針對按鈕、標題等元素的暗黑模式樣式 */
+  button {
+    background-color: #333333;
+    color: #ffffff;
+    border: 1px solid #444444;
+  }
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    color: #ffffff;
+  }
 }
 
 /* 為常見的文字元素添加暗黑模式樣式 */

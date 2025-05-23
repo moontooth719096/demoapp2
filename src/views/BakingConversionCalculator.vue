@@ -355,6 +355,9 @@ function getVolume(
     return Math.PI * radius * radius * height;
   } else if (shape === "square") {
     return size1 * (size2 ?? size1) * height;
+  } else if (shape === "custom") {
+    // 長方體體積 = 長*寬*高
+    return size1 * (size2 ?? 1) * height;
   }
   return 1;
 }

@@ -290,7 +290,7 @@
 <script setup lang="ts">
 import "@/assets/styles/BakingConversionCalculator/BakingConversionCalculator.scss";
 import { ref } from "vue";
-
+import Swal from "sweetalert2";
 const INCH_TO_CM = 2.54;
 
 // 響應式欄位
@@ -318,10 +318,18 @@ function copyResult() {
   navigator.clipboard
     .writeText(result.value)
     .then(() => {
-      alert("已複製到剪貼簿！");
+      Swal.fire({
+        position: "center",
+        title: "已複製到剪貼簿！",
+        showConfirmButton: false,
+        timer: 500,
+      });
     })
     .catch(() => {
-      alert("複製失敗，請手動複製。");
+      Swal.fire({
+        text: "複製失敗，請手動複製。",
+        icon: "error",
+      });
     });
 }
 

@@ -60,6 +60,23 @@
           alt="..."
         />
       </button>
+      <button
+        id="LoadMyPlaylists_btn"
+        class="btn btn-success text-center"
+        type="button"
+        @click="loadMyYoutubePlaylists"
+      >
+        <div class="btn_text">載入我的 YouTube 播放清單</div>
+        <i class="btn_icon bi bi-youtube"></i>
+      </button>
+      <div v-if="myPlaylists.length > 0" class="my-playlists">
+        <h5>我的 YouTube 播放清單</h5>
+        <ul>
+          <li v-for="pl in myPlaylists" :key="pl.id">
+            <a href="#" @click.prevent="selectPlaylist(pl.id)">{{ pl.title }}</a>
+          </li>
+        </ul>
+      </div>
       <drive-picker
         :client-id="clientId"
         :developer-key="developerKey"
@@ -158,6 +175,7 @@ const showGDownload = ref(false);
 const authToken = ref<string | undefined>("");
 const selectFileID = ref<string | undefined>("");
 const tablecheckedEnable = ref<boolean>(true);
+const myPlaylists = ref<Array<{ id: string; title: string }>>([]);
 
 onMounted(() => {
   authToken.value =
@@ -489,6 +507,47 @@ watch(showGDownload, async (val) => {
     }
   }
 });
+
+const loadMyYoutubePlaylists = async () => {
+  try {
+    let token = currentGAuthToken.value;
+    if (!token) {
+      // 若尚未登入，導向 Google OAuth2
+      const clientId = import.meta.env.VITE_GoogleClientId;
+      const scope = "https://www.googleapis.com/auth/youtube.readonly";
+      const redirectUri = window.location.origin;
+      const url = `https://accounts.google.com/o/oauth2/v2/auth?client_id=${clientId}&redirect_uri=${redirectUri}&response_type=token&scope=${encodeURIComponent(scope)}`;
+      window.open(url, "_blank");
+      Swal.fire({
+        icon: "info",
+        text: "請完成 Google 登入並授權 YouTube 權限，然後再點一次按鈕。",
+      });
+      return;
+    }
+    // 2. 呼叫 YouTube Data API 取得播放清單
+    const resp = await fetch(
+      "https://www.googleapis.com/youtube/v3/playlists?part=snippet&mine=true&maxResults=50",
+      {
+        headers: { Authorization: `Bearer ${token}` },
+      }
+    );
+    const data = await resp.json();
+    if (data.items) {
+      myPlaylists.value = data.items.map((item: any) => ({
+        id: item.id,
+        title: item.snippet.title,
+      }));
+    } else {
+      Swal.fire({ icon: "error", text: "無法取得播放清單，請確認已授權。" });
+    }
+  } catch (e) {
+    Swal.fire({ icon: "error", text: "取得播放清單失敗" });
+  }
+};
+
+const selectPlaylist = async (playlistId: string) => {
+  await playListAPICall(playlistId);
+};
 </script>
 
 <style scoped>

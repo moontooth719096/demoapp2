@@ -18,7 +18,10 @@
           >
         </li>
         <li>
-          <router-link class="nav-link" to="/BCC" @click="closeNav"
+          <router-link
+            class="nav-link"
+            to="/BakingConversionCalculator"
+            @click="closeNav"
             >食譜尺寸換算工具</router-link
           >
         </li>

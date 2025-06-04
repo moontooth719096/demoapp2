@@ -1,42 +1,41 @@
 import * as vueRouter from "vue-router";
 import store from "@/store";
 import { AppLoginCheck } from "@/utils/Auth";
-import Home from "@/views/Home/Home.vue";
-import Login from "@/views/Login/Login.vue";
+import Home from "@/views/Home.vue";
+import Login from "@/views/Login.vue";
 import BCC from "@/views/BakingConversionCalculator.vue";
 
 export enum PathKeyType {
   "Home" = "/",
   "Login" = "Login",
-  "YoutubeDownload" = "YoutubeDownload",
-  "ChatRoom" = "ChatRoom",
-  "LogView" = "LogView",
-  "BCC" = "BCC",
 }
 
-const routes: Array<vueRouter.RouteRecordRaw> = [
+// 動態自動載入 views 目錄下所有 .vue 頁面
+const views = import.meta.glob("@/views/**/*.vue");
+
+const staticRoutes: Array<vueRouter.RouteRecordRaw> = [
   { path: "/", name: PathKeyType.Home.toString(), component: Home },
   { path: "/Login", name: PathKeyType.Login.toString(), component: Login },
-  {
-    path: "/YoutubeDownload",
-    name: PathKeyType.YoutubeDownload.toString(),
-    component: () => import("@/views/YoutubeDownload/YoutubeDownload.vue"),
-  },
-  {
-    path: "/ChatRoom",
-    name: PathKeyType.ChatRoom.toString(),
-    component: () => import("@/views/ChatRoom/ChatRoom.vue"),
-  },
-  {
-    path: "/LogView",
-    name: PathKeyType.LogView.toString(),
-    component: () => import("@/views/LogViewer/LogViewer.vue"),
-  },
-  {
-    path: "/BCC",
-    name: PathKeyType.BCC.toString(),
-    component: () => BCC,
-  },
+];
+
+const dynamicRoutes: Array<vueRouter.RouteRecordRaw> = Object.entries(views)
+  .map(([path, component]) => {
+    const match = path.match(/\/views\/(.+)\.vue$/);
+    if (!match) return undefined;
+    const name = match[1].replace(/\//g, "");
+    // 避免重複註冊 Home、Login、BCC
+    if (["HomeHome", "LoginLogin"].includes(name)) return undefined;
+    return {
+      path: `/${name}`,
+      name,
+      component,
+    } as vueRouter.RouteRecordRaw;
+  })
+  .filter((r): r is vueRouter.RouteRecordRaw => !!r);
+
+const routes: Array<vueRouter.RouteRecordRaw> = [
+  ...staticRoutes,
+  ...dynamicRoutes,
 ];
 
 const router = vueRouter.createRouter({

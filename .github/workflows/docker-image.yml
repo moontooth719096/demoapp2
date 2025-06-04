@@ -20,6 +20,12 @@ jobs:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
+      - name: Set Google env
+        run: |
+          echo "VITE_GoogleAPIKey=${{ secrets.VITE_GOOGLE_API_KEY }}" >> .env
+          echo "VITE_GoogleClientId=${{ secrets.VITE_GOOGLE_CLIENT_ID }}" >> .env
+          echo "VITE_GoogleAppId=${{ secrets.VITE_GOOGLE_APP_ID }}" >> .env
+
       - name: Build and push Docker image
         uses: docker/build-push-action@v5
         with:

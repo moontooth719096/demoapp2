@@ -26,10 +26,10 @@ jobs:
           echo "VITE_GoogleClientId=${{ secrets.VITE_GOOGLE_CLIENT_ID }}" >> .env
           echo "VITE_GoogleAppId=${{ secrets.VITE_GOOGLE_APP_ID }}" >> .env
 
-      - name: Build and push Docker image
+      - name: Build and push Docker image (DEV)
         uses: docker/build-push-action@v5
         with:
           context: .
-          file: ./Dockerfile
+          file: ./Dockerfile.dev
           push: true
           tags: ${{ secrets.DOCKERHUB_USERNAME }}/demoapp2:dev

@@ -1,0 +1,13 @@
+# DEV 專用 Dockerfile：啟動 Vite 開發伺服器，支援熱重載
+FROM node:18-alpine
+
+WORKDIR /app
+
+COPY package.json package-lock.json ./
+RUN npm install
+
+COPY . .
+
+EXPOSE 5173
+
+CMD ["npm", "run", "dev", "--", "--host"]

@@ -17,8 +17,7 @@ const app = createApp(App);
 
 app
   .use(GoogleSignInPlugin, {
-    clientId:
-      "607977203990-5s5ur3sgv55i7gr4h8eapuuq8jvh0pim.apps.googleusercontent.com",
+    clientId: import.meta.env.VITE_GoogleClientId,
   })
   .use(store)
   .use(router)

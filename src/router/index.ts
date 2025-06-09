@@ -54,11 +54,7 @@ router.beforeEach(async (to, from, next) => {
   } else next({ name: PathKeyType.Login.toString() });
 });
 
-router.afterEach((to, from) => {
-  // 如果離開 ChatRoom 頁面，清空 nowTalkinfo
-  if (from.name === "ChatRoom" && to.name !== "ChatRoom") {
-    store.dispatch("clearNowTalk");
-  }
+router.afterEach(() => {
   setTimeout(() => {
     store.dispatch("hideLoading");
   }, 500);

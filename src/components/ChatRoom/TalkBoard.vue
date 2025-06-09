@@ -83,11 +83,7 @@
 import { computed, ref, watch, nextTick } from "vue";
 import store from "@/store";
 import { isWhiteSpace } from "@/utils/CheckHelper";
-import {
-  GetConnectedUsers,
-  RefreshChat,
-  SendPrivateMessage,
-} from "@/utils/ChatRoomHubHelper";
+import { SendPrivateMessage } from "@/utils/ChatRoomHubHelper";
 import Swal from "sweetalert2";
 
 const userInfo = computed(() => store.getters.userInfo);
@@ -246,11 +242,6 @@ const autoScrollToBottom = () => {
   if (container.scrollHeight !== undefined) {
     container.scrollTop = container.scrollHeight; // 滚动到底部
   }
-  // 抓取scrollbar的區塊
-  //  let container = this.$refs.scrollContainer;
-  //  if (container.scrollHeight == undefined)
-  //      return;
-  //  container.scrollTop = container.scrollHeight;
 };
 
 const backtochatlist = () => {

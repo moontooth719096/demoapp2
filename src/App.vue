@@ -30,7 +30,7 @@ import router from "./router";
 import type { Router } from "vue-router";
 import { Disconnected } from "@/utils/ChatRoomHubHelper";
 import { ref } from "vue";
-import ChatIcon from '@/components/ChatRoom/ChatIcon.vue';
+import ChatIcon from "@/components/ChatRoom/ChatIcon.vue";
 
 export default {
   components: {
@@ -62,7 +62,8 @@ export default {
 
 <style lang="scss">
 @import "@/assets/styles/size.scss";
-html, body {
+html,
+body {
   height: 100%;
   margin: 0;
   padding: 0;

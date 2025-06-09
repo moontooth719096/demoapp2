@@ -77,6 +77,12 @@ export function Disconnected() {
   // chatRoomConnection.invoke("OnDisconnect").catch(err => console.error(err));
   chatRoomConnection.stop();
 }
+
+export function IsConnected() {
+  console.log(chatRoomConnection.state);
+  return chatRoomConnection.state === HubConnectionState.Connected;
+}
+
 export async function GetConnectedUsers() {
   try {
     const getresult = await chatRoomConnection.invoke("GetConnectedUsers");

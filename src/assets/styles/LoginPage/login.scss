@@ -1,14 +1,128 @@
-#LoginPage{
+@import "@/assets/styles/size.scss";
+#LoginPage {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #e3f0ff 0%, #f9f9f9 100%);
+
+  .card {
     width: 100%;
-    height: 100%;
-    display: flex;
-    justify-content: center;
-    align-items: center; 
-    #CardPannel {
-        width: 30%;
-        min-width: 20rem;
-        height: auto;
-        color: white;
-        background-color: rgb(255, 255, 255, 0.2);
+    max-width: 400px;
+    border-radius: 1.2rem;
+    box-shadow: 0 4px 24px rgba(25, 118, 210, 0.08);
+    border: none;
+    background: #fff;
+    margin: 2rem 0;
+    .card-body {
+      padding: 2.2rem 2rem 2rem 2rem;
+      display: flex;
+      flex-direction: column;
+      align-items: stretch;
+      form {
+        width: 100%;
+        .mb-3 {
+          margin-bottom: 1.2rem !important;
+        }
+        .form-label {
+          font-weight: 600;
+          color: #1976d2;
+          margin-bottom: 0.3rem;
+        }
+        .form-control {
+          border-radius: 0.6rem;
+          border: 1px solid #b0c4de;
+          font-size: 1.08rem;
+          padding: 0.7rem 1rem;
+          transition: border 0.2s;
+          &:focus {
+            border-color: #1976d2;
+            box-shadow: 0 0 0 2px #e3f0ff;
+          }
+        }
+        .form-text {
+          color: #888;
+          font-size: 0.92em;
+        }
+        .form-check-input {
+          margin-top: 0.2rem;
+        }
+        .form-check-label {
+          color: #555;
+        }
+        .row {
+          display: flex;
+          flex-direction: row;
+          gap: 0.7rem;
+          margin-top: 1.2rem;
+          button.btn-primary {
+            flex: 1;
+            background: #1976d2;
+            border: none;
+            border-radius: 0.6rem;
+            font-size: 1.08rem;
+            font-weight: 600;
+            padding: 0.7rem 0;
+            transition: background 0.2s;
+            &:hover {
+              background: #1256a3;
+            }
+          }
+          .GoogleSignInButton {
+            flex: 1;
+            min-width: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 0;
+          }
+        }
+      }
     }
+  }
+}
+// 響應式設計
+@include respond-to(xs) {
+  #LoginPage {
+    .card {
+      max-width: 98vw;
+      .card-body {
+        padding: 1.2rem 0.5rem 1.2rem 0.5rem;
+        form {
+          .row {
+            flex-direction: column;
+            gap: 0.5rem;
+            button.btn-primary,
+            .GoogleSignInButton {
+              width: 100%;
+            }
+          }
+        }
+      }
+    }
+  }
+}
+@include respond-to(sm) {
+  #LoginPage {
+    .card {
+      max-width: 98vw;
+      .card-body {
+        padding: 1.5rem 1rem 1.5rem 1rem;
+      }
+    }
+  }
+}
+@include respond-to(md) {
+  #LoginPage {
+    .card {
+      max-width: 420px;
+    }
+  }
+}
+@include respond-to(lg) {
+  #LoginPage {
+    .card {
+      max-width: 480px;
+    }
+  }
 }

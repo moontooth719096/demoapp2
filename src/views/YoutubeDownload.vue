@@ -1,125 +1,138 @@
 <template>
-  <div id="YoutubeDonloadApp">
-    <div v-if="isDownload" class="progress">
-      <p>{{ downloadmessage }}</p>
-      <div
-        class="progress-bar"
-        role="progressbar"
-        :style="{ width: downloadProgress + '%' }"
-        :aria-valuenow="downloadProgress"
-        aria-valuemin="0"
-        aria-valuemax="100"
-      >
-        {{ downloadProgress }}%
-      </div>
-    </div>
-    <div v-else class="searchboard">
-      <input
-        type="text"
-        class="form-control search_input"
-        name="youtubeurl"
-        id="youtubeurl"
-        aria-describedby="helpId"
-        placeholder="請填入youtube影片網址"
-        v-model.trim="inputUrl"
-        ref="urlinput"
-        required
-      />
-      <button
-        id="Search_btn"
-        name="Search_btn"
-        type="button"
-        class="search_btn btn btn-primary"
-        :disabled="!inputUrlHaveValue"
-        @click="listget"
-      >
-        <div class="btn_text">Search</div>
-        <i class="btn_icon bi bi-search"></i>
-      </button>
-      <button
-        id="Download_btn"
-        class="download_btn btn btn-warning text-center"
-        type="button"
-        @click="download(1)"
-        v-if="searchDatas.length > 0"
-      >
-        <div class="btn_text">Download</div>
-        <i class="btn_icon bi bi-download"></i>
-      </button>
-      <button
-        id="GDownload_btn"
-        class="download_btn btn btn-outline-info text-center"
-        type="button"
-        @click="Gdownload"
-        v-if="searchDatas.length > 0"
-      >
-        <img
-          style="width: 1rem"
-          src="@/assets/images/googledriveicon.png"
-          class="img-fluid"
-          alt="..."
+  <div id="YoutubeDownloadApp" class="ydl-app">
+    <!-- 搜尋與操作卡片 -->
+    <div class="ydl-card ydl-search-card">
+      <div class="ydl-search-row">
+        <input
+          type="text"
+          class="form-control ydl-search-input"
+          name="youtubeurl"
+          id="youtubeurl"
+          aria-describedby="helpId"
+          placeholder="請填入 YouTube 影片網址或播放清單"
+          v-model.trim="inputUrl"
+          ref="urlinput"
+          required
         />
-      </button>
-      <button
-        id="LoadMyPlaylists_btn"
-        class="btn btn-success text-center"
-        type="button"
-        @click="loadMyYoutubePlaylists"
-      >
-        <div class="btn_text">載入我的 YouTube 播放清單</div>
-        <i class="btn_icon bi bi-youtube"></i>
-      </button>
-      <div v-if="myPlaylists.length > 0" class="my-playlists">
-        <h5>我的 YouTube 播放清單</h5>
-        <ul>
-          <li v-for="pl in myPlaylists" :key="pl.id">
-            <a href="#" @click.prevent="selectPlaylist(pl.id)">{{ pl.title }}</a>
-          </li>
-        </ul>
+        <button
+          id="Search_btn"
+          name="Search_btn"
+          type="button"
+          class="ydl-btn ydl-btn-primary"
+          :disabled="!inputUrlHaveValue"
+          @click="listget"
+        >
+          <i class="bi bi-search"></i> 搜尋
+        </button>
       </div>
-      <drive-picker
-        :client-id="clientId"
-        :developer-key="developerKey"
-        :app-id="appId"
-        ref="googlepicker"
-        v-if="showGDownload"
-      >
-        <drive-picker-docs-view
-          select-folder-enabled="true"
-          include-folders="true"
-          owned-by-me="true"
-          mime-types="application/vnd.google-apps.folder"
-          multi-select-enabled="false"
-        ></drive-picker-docs-view>
-      </drive-picker>
+      <div class="ydl-action-row">
+        <button
+          id="Download_btn"
+          class="ydl-btn ydl-btn-warning"
+          type="button"
+          @click="download(1)"
+          v-if="searchDatas.length > 0"
+        >
+          <i class="bi bi-download"></i> 下載
+        </button>
+        <button
+          id="GDownload_btn"
+          class="ydl-btn ydl-btn-outline-info"
+          type="button"
+          @click="Gdownload"
+          v-if="searchDatas.length > 0"
+        >
+          <img
+            style="width: 1.2rem; margin-right: 0.3rem"
+            src="@/assets/images/googledriveicon.png"
+            alt="Google Drive"
+          />
+          存到 Google Drive
+        </button>
+        <button
+          id="LoadMyPlaylists_btn"
+          class="ydl-btn ydl-btn-success"
+          type="button"
+          @click="loadMyYoutubePlaylists"
+        >
+          <i class="bi bi-youtube"></i> 載入我的播放清單
+        </button>
+      </div>
     </div>
-    <vue-good-table
-      class="databroad"
-      :columns="columns"
-      :rows="searchDatas"
-      :select-options="{
-        checked: true,
-        enabled: tablecheckedEnable,
-        disableSelectInfo: true,
-        selectAllByGroup: true,
-        alwaysShowSelectionInfo: false,
-      }"
-      ref="SearchResultTable"
-      compactMode
+
+    <!-- 進度條與訊息卡片 -->
+    <div v-if="isDownload" class="ydl-card ydl-progress-card">
+      <p class="ydl-progress-msg">{{ downloadmessage }}</p>
+      <div class="ydl-progress-bar-wrap">
+        <div
+          class="ydl-progress-bar"
+          :style="{ width: downloadProgress + '%' }"
+        >
+          {{ downloadProgress }}%
+        </div>
+      </div>
+    </div>
+
+    <!-- 播放清單卡片 -->
+    <div v-if="myPlaylists.length > 0" class="ydl-card ydl-playlist-card">
+      <div class="ydl-playlist-header" @click="showPlaylists = !showPlaylists">
+        <i class="bi bi-list-task"></i> 我的 YouTube 播放清單
+        <span class="ydl-toggle-icon">{{ showPlaylists ? "▲" : "▼" }}</span>
+      </div>
+      <ul v-show="showPlaylists" class="ydl-playlist-list">
+        <li v-for="pl in myPlaylists" :key="pl.id">
+          <a href="#" @click.prevent="selectPlaylist(pl.id)">{{ pl.title }}</a>
+        </li>
+      </ul>
+    </div>
+
+    <!-- Google Drive Picker -->
+    <drive-picker
+      :client-id="clientId"
+      :developer-key="developerKey"
+      :app-id="appId"
+      ref="googlepicker"
+      v-if="showGDownload"
     >
-      <template #table-row="props">
-        <span v-if="props.column.field == 'ThumbnailUrl'">
-          <a :href="props.row.Url" target="_blank">
-            <img
-              style="width: 6.25rem"
-              :src="props.row.ThumbnailUrl"
-              class="img-fluid img-thumbnail"
-              alt="..."
-            />
-          </a>
-        </span>
-      </template>
-    </vue-good-table>
+      <drive-picker-docs-view
+        select-folder-enabled="true"
+        include-folders="true"
+        owned-by-me="true"
+        mime-types="application/vnd.google-apps.folder"
+        multi-select-enabled="false"
+      ></drive-picker-docs-view>
+    </drive-picker>
+
+    <!-- 結果表格卡片 -->
+    <div v-if="searchDatas.length > 0" class="ydl-card ydl-table-card">
+      <vue-good-table
+        class="ydl-table"
+        :columns="columns"
+        :rows="searchDatas"
+        :select-options="{
+          checked: true,
+          enabled: tablecheckedEnable,
+          disableSelectInfo: true,
+          selectAllByGroup: true,
+          alwaysShowSelectionInfo: false,
+        }"
+        ref="SearchResultTable"
+        compactMode
+      >
+        <template #table-row="props">
+          <span v-if="props.column.field == 'ThumbnailUrl'">
+            <a :href="props.row.Url" target="_blank">
+              <img
+                style="width: 6.25rem"
+                :src="props.row.ThumbnailUrl"
+                class="img-fluid img-thumbnail"
+                alt="..."
+              />
+            </a>
+          </span>
+        </template>
+      </vue-good-table>
+    </div>
   </div>
 </template>
 
@@ -176,11 +189,12 @@ const authToken = ref<string | undefined>("");
 const selectFileID = ref<string | undefined>("");
 const tablecheckedEnable = ref<boolean>(true);
 const myPlaylists = ref<Array<{ id: string; title: string }>>([]);
+const showPlaylists = ref(true);
 
 onMounted(() => {
   authToken.value =
     userInfo.ThirdPlatform == "Google" ? userInfo.ThirdToken : "";
-    console.log(import.meta.env.VITE_GoogleClientId);
+  console.log(import.meta.env.VITE_GoogleClientId);
 });
 
 onUnmounted(() => {
@@ -413,6 +427,7 @@ const download = async (mode: number) => {
         icon: "error",
         text: "沒有選擇任何歌曲",
       });
+      tablecheckedEnable.value = true;
       return;
     }
 
@@ -516,7 +531,9 @@ const loadMyYoutubePlaylists = async () => {
       const clientId = import.meta.env.VITE_GoogleClientId;
       const scope = "https://www.googleapis.com/auth/youtube.readonly";
       const redirectUri = window.location.origin;
-      const url = `https://accounts.google.com/o/oauth2/v2/auth?client_id=${clientId}&redirect_uri=${redirectUri}&response_type=token&scope=${encodeURIComponent(scope)}`;
+      const url = `https://accounts.google.com/o/oauth2/v2/auth?client_id=${clientId}&redirect_uri=${redirectUri}&response_type=token&scope=${encodeURIComponent(
+        scope
+      )}`;
       window.open(url, "_blank");
       Swal.fire({
         icon: "info",
@@ -550,6 +567,6 @@ const selectPlaylist = async (playlistId: string) => {
 };
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
 @import "@/assets/styles/YoutubeDownload/YoutubeDownload.scss";
 </style>

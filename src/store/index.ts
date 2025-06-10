@@ -228,6 +228,16 @@ export default createStore<statetype>({
       }
     },
     async AddTalk({ commit }, messageinfo: SingleTalkInfo) {
+      // 產生訊息唯一 key（可根據實際訊息結構調整）
+      const key = `${messageinfo.talkid ?? ""}_${messageinfo.sayid ?? ""}_${
+        messageinfo.message ?? ""
+      }`;
+      const receivedSet = this.state.chatRoomInfo.receivedMessageKeys;
+      if (receivedSet.has(key)) {
+        // 已經收到過這則訊息，不再重複 push
+        return;
+      }
+      receivedSet.add(key);
       let talk = this.state.chatRoomInfo.talklist?.find(
         (x) => x.talkid == messageinfo.talkid
       ) as TalkInfo;

@@ -3,7 +3,6 @@ import store from "@/store";
 import { AppLoginCheck } from "@/utils/Auth";
 import Home from "@/views/Home.vue";
 import Login from "@/views/Login.vue";
-import BCC from "@/views/BakingConversionCalculator.vue";
 
 export enum PathKeyType {
   "Home" = "/",

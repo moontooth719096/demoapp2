@@ -94,6 +94,12 @@ export default createStore<statetype>({
     RESET_STATE(state) {
       Object.assign(state, resetstate());
     },
+    // 新增 mutation：清空 nowtalk
+    clearNowtalk(state) {
+      if (state.chatRoomInfo) {
+        state.chatRoomInfo.nowtalk = [];
+      }
+    },
   },
   // actions: 定義觸發 mutation 的方法，可以是同步或異步
   actions: {

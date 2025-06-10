@@ -35,7 +35,6 @@
 
 <script setup lang="ts">
 import { AppLogOut } from "@/utils/Auth";
-import { defineProps, defineEmits } from "vue";
 
 const props = defineProps<{ show: boolean }>();
 const emit = defineEmits(["close"]);

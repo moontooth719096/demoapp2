@@ -19,7 +19,9 @@
     :show="showNav"
     @close="showNav = false"
   />
+  <ChatIcon class="floating-chat-icon" />
 </template>
+
 <script lang="ts">
 import { mapGetters } from "vuex";
 import LoadingCustom from "@/components/Loding/Loding.vue";
@@ -28,11 +30,13 @@ import router from "./router";
 import type { Router } from "vue-router";
 import { Disconnected } from "@/utils/ChatRoomHubHelper";
 import { ref } from "vue";
+import ChatIcon from '@/components/ChatRoom/ChatIcon.vue';
 
 export default {
   components: {
     loding: LoadingCustom,
     navComponent: Nav,
+    ChatIcon,
   },
   setup() {
     const showNav = ref(false);
@@ -55,18 +59,23 @@ export default {
   },
 };
 </script>
+
 <style lang="scss">
 @import "@/assets/styles/size.scss";
-// header {
-//   height: 0;
-//   width: 100%;
-// }
+html, body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+}
 .viewbody {
   height: 100%;
   width: 100%;
+  overflow: auto;
   #main {
     height: 100%;
     width: 100%;
+    overflow: auto;
   }
 }
 #LodingBoard {
@@ -106,5 +115,28 @@ export default {
   span {
     display: none;
   }
+}
+.floating-chat-icon {
+  position: fixed;
+  left: 2rem;
+  bottom: 4.5rem; // 往上移動
+  z-index: 1000;
+  font-size: 3rem; // 放大icon
+  color: #007bff;
+  cursor: pointer;
+  background: white;
+  border-radius: 50%;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  width: 4.2rem; // 放大按鈕
+  height: 4.2rem; // 放大按鈕
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  transition: box-shadow 0.2s;
+}
+.floating-chat-icon:hover {
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25);
+  color: #0056b3;
 }
 </style>

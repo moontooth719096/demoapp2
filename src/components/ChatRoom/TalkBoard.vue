@@ -3,7 +3,7 @@
     <div
       class="card-header p-0 d-flex justify-content-center align-items-center"
     >
-      <i class="bi bi-backspace" @click="backtochatlist"></i>
+      <i class="bi bi-backspace"></i>
       <strong class="name col text-truncate align-self-center text-center">{{
         chatroominfo?.nowTalkinfo?.UserName
       }}</strong>
@@ -242,10 +242,6 @@ const autoScrollToBottom = () => {
   if (container.scrollHeight !== undefined) {
     container.scrollTop = container.scrollHeight; // 滚动到底部
   }
-};
-
-const backtochatlist = () => {
-  store.dispatch("clearNowTalk");
 };
 
 const insertEmoji = (emoji: any) => {

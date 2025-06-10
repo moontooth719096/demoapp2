@@ -80,7 +80,7 @@ function goToChatRoom() {
 
 @keyframes blink-dot {
   0% {
-    opacity: 1;
+    opacity: 100;
     box-shadow: 0 0 4px #ff3b30;
   }
   100% {

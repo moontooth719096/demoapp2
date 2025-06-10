@@ -43,7 +43,12 @@ const router = vueRouter.createRouter({
   routes: routes,
 });
 
+// 離開 ChatRoom 頁面時清空 nowtalk
 router.beforeEach(async (to, from, next) => {
+  // 如果上一頁是 ChatRoom，且即將離開
+  if (from.name === "ChatRoom" && to.name !== "ChatRoom") {
+    store.dispatch("clearNowTalk");
+  }
   if (to.name === "Login") {
     next();
     return;

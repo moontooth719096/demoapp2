@@ -9,6 +9,6 @@ export async function Log(message: string, level: LogLevel): Promise<void> {
     CallEnd: 1,
   };
   try {
-    await apiHelp.post(import.meta.env.VITE_LogUri, postdata);
+    await apiHelp.post(import.meta.env.VITE_LOGURI, postdata);
   } catch {}
 }

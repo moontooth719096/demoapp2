@@ -52,6 +52,8 @@
               :size="'medium'"
               :text="'signin'"
               :logo_alignment="'left'"
+              :use_fedcm_for_prompt="true"
+              :use_fedcm_for_button="true"
             ></GoogleSignInButton>
             <!-- <GoogleLogin :callback="callback"/> -->
           </div>
@@ -86,7 +88,7 @@ useOneTap({
   onError: () => {
     console.error("Error with One Tap Login");
     handleLoginError();
-  }
+  },
 });
 
 // handle success event

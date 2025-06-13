@@ -32,7 +32,7 @@ onMounted(() => {
   // 定時檢查連線狀態，讓 isChatConnected 具備 reactivity
   intervalId = setInterval(() => {
     isChatConnected.value = IsConnected();
-  }, 500); // 每 0.5 秒檢查一次
+  }, 30000); // 每 0.5 秒檢查一次
 });
 onUnmounted(() => {
   if (intervalId) clearInterval(intervalId);

@@ -25,6 +25,11 @@
             >食譜尺寸換算工具</router-link
           >
         </li>
+        <li>
+          <router-link class="nav-link" to="/MusicPlayer" @click="closeNav"
+            >MusicPlayer</router-link
+          >
+        </li>
         <li style="margin-top: 2rem">
           <button class="btn btn-primary w-100" @click="AppLogOut">登出</button>
         </li>

@@ -320,9 +320,8 @@ onUnmounted(() => {
 .music-player-layout {
   display: flex;
   gap: 0.5rem;
-  width: 100%;
+  width: 80%;
   height: 100%;
-  max-width: 900px;
   min-height: 600px;
   align-items: flex-start;
 }
@@ -348,8 +347,7 @@ onUnmounted(() => {
     list-style: none;
     padding: 0;
     margin: 0 0 1.2rem 0;
-    max-height: 540px;
-    height: 80%;
+    height: 90%;
     overflow-y: auto;
     border-radius: 0.5rem;
     background: #f5f7fa;
@@ -438,7 +436,6 @@ onUnmounted(() => {
     width: 100%;
     height: 100%;
     min-height: 540px;
-    height: 100%;
     text-align: center;
     display: flex;
     flex-direction: column;
@@ -447,7 +444,6 @@ onUnmounted(() => {
     .audio-img {
       // 佔據 music-player-card 的 70% 高度
       width: 70%;
-      max-width: 350px;
       aspect-ratio: 1/1;
       height: 70%;
       min-height: 120px;

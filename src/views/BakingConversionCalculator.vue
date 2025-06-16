@@ -288,7 +288,6 @@
 </template>
 
 <script setup lang="ts">
-import "@/assets/styles/BakingConversionCalculator/BakingConversionCalculator.scss";
 import { ref } from "vue";
 import Swal from "sweetalert2";
 const INCH_TO_CM = 2.54;
@@ -479,76 +478,6 @@ function convertRecipe() {
 }
 </script>
 
-<style scoped lang="scss">
-@import "@/assets/styles/size.scss";
-
-.required {
-  color: red;
-  margin-right: 0.2em;
-}
-.copy-btn {
-  font-size: 0.75em;
-  padding: 1px 7px;
-  margin-top: 4px;
-  background: #f5f5f5;
-  border: 1px solid #ccc;
-  border-radius: 3px;
-  color: #888;
-  cursor: pointer;
-  transition: background 0.2s, color 0.2s;
-}
-.copy-btn:hover {
-  background: #e0e0e0;
-  color: #333;
-}
-
-@include respond-to(xs) {
-  #BakingConversionCalculatorApp {
-    padding: 0.5rem 0.2rem;
-  }
-  .input-output-row,
-  .mold-row {
-    flex-direction: column;
-    gap: 1.2rem;
-  }
-  .input-col,
-  .output-col,
-  .mold-col {
-    width: 100%;
-    min-width: 0;
-    margin-bottom: 1rem;
-  }
-  textarea {
-    font-size: 1em;
-  }
-  button,
-  .copy-btn {
-    width: 100%;
-    margin-top: 0.5rem;
-  }
-}
-@include respond-to(sm) {
-  #BakingConversionCalculatorApp {
-    max-width: 98vw;
-    padding: 0.5rem 0.5rem;
-  }
-  .input-output-row,
-  .mold-row {
-    gap: 1.5rem;
-  }
-}
-@include respond-to(md) {
-  #BakingConversionCalculatorApp {
-    max-width: 700px;
-    margin: 2rem auto;
-    padding: 1rem 1.5rem;
-  }
-}
-@include respond-to(lg) {
-  #BakingConversionCalculatorApp {
-    max-width: 900px;
-    margin: 2rem auto;
-    padding: 1.5rem 2rem;
-  }
-}
+<style lang="scss">
+@import "@/assets/styles/BakingConversionCalculator/BakingConversionCalculator.scss";
 </style>

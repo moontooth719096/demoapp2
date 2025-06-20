@@ -20,6 +20,11 @@
     @close="showNav = false"
   />
   <ChatIcon class="floating-chat-icon" />
+  <MiniMusicPlayer
+    v-if="!isMusicPlayerPage"
+    style="position: fixed; bottom: 16px; right: 16px; z-index: 1000"
+  />
+  <GlobalAudioPlayer />
 </template>
 
 <script lang="ts">
@@ -31,12 +36,16 @@ import type { Router } from "vue-router";
 import { Disconnected } from "@/utils/ChatRoomHubHelper";
 import { ref } from "vue";
 import ChatIcon from "@/components/ChatRoom/ChatIcon.vue";
+import MiniMusicPlayer from "@/components/MusicPlayer/MiniMusicPlayer.vue";
+import GlobalAudioPlayer from "@/components/GlobalAudioPlayer.vue";
 
 export default {
   components: {
     loding: LoadingCustom,
     navComponent: Nav,
     ChatIcon,
+    MiniMusicPlayer,
+    GlobalAudioPlayer,
   },
   setup() {
     const showNav = ref(false);
@@ -51,6 +60,12 @@ export default {
       return (
         router.currentRoute.value.path === "/Login" ||
         router.currentRoute.value.name === "Login"
+      );
+    },
+    isMusicPlayerPage(): boolean {
+      return (
+        router.currentRoute.value.path === "/MusicPlayer" ||
+        router.currentRoute.value.name === "MusicPlayer"
       );
     },
   },

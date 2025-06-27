@@ -174,7 +174,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onUnmounted, computed, watch } from "vue";
+import { ref, computed, watch } from "vue";
 import { useMusicPlayerStore } from "@/store/MusicPlayerStore";
 import { useMusicPlayerFunctions } from "@/utils/useMusicPlayerFunctions";
 type Ref<T> = import("vue").Ref<T>;
@@ -197,20 +197,12 @@ const currentIndex = computed({
   set: (val: number) => musicPlayerStore.setSong(val),
 });
 const albumImgUrl: Ref<string> = ref("");
-const audioRef = ref<HTMLAudioElement | null>(null);
 const duration = ref(0);
 const progress = ref(0);
 
-// 取得全域 audio 實體
-const getGlobalAudio = () => {
-  return document.querySelector(
-    'audio[style*="display: none"]'
-  ) as HTMLAudioElement | null;
-};
-
-// 監聽全域 audio 播放進度
+// 監聽 audio 播放進度
 const updateProgress = () => {
-  const audio = getGlobalAudio();
+  const audio = musicPlayerStore.audio;
   if (audio) {
     progress.value = audio.currentTime;
     duration.value = audio.duration || 0;
@@ -218,7 +210,7 @@ const updateProgress = () => {
 };
 
 const onSeek = () => {
-  const audio = getGlobalAudio();
+  const audio = musicPlayerStore.audio;
   if (audio) {
     audio.currentTime = progress.value;
   }
@@ -236,14 +228,13 @@ const formatTime = (sec: number) => {
 };
 
 // 監聽 audio 事件
-let audioEl: HTMLAudioElement | null = null;
 watch(
   () => musicPlayerStore.currentSong?.url,
   () => {
-    audioEl = getGlobalAudio();
-    if (audioEl) {
-      audioEl.ontimeupdate = updateProgress;
-      audioEl.onloadedmetadata = updateProgress;
+    const audio = musicPlayerStore.audio;
+    if (audio) {
+      audio.ontimeupdate = updateProgress;
+      audio.onloadedmetadata = updateProgress;
     }
   },
   { immediate: true }
@@ -253,11 +244,12 @@ watch(
 watch(
   () => musicPlayerStore.isPlaying,
   (val) => {
-    if (audioRef.value) {
+    const audio = musicPlayerStore.audio;
+    if (audio) {
       if (val) {
-        audioRef.value.play();
+        audio.play();
       } else {
-        audioRef.value.pause();
+        audio.pause();
       }
     }
   }
@@ -267,12 +259,6 @@ const pause = () => musicPlayerStore.pause();
 const prevSong = () => musicPlayerStore.prevSong();
 const nextSong = () => musicPlayerStore.nextSong();
 const changeRepeatMode = (mode: 1 | 2) => musicPlayerStore.setRepeatMode(mode);
-// const { prevSong, nextSong } = useMusicPlayerFunctions(
-//   playList,
-//   currentIndex,
-//   audioRef,
-//   computed(() => musicPlayerStore.isPlaying)
-// );
 
 function onFileChange(event: Event) {
   musicPlayerStore.clearObjectUrl();
@@ -285,19 +271,13 @@ function onFileChange(event: Event) {
       Array.from(files).map((file: File) => ({
         title: file.name,
         url: URL.createObjectURL(file),
+        imgUrl: "", // 預設無圖
       })),
       0
     );
     // 預設播放第一首
     currentIndex.value = 0;
     setCurrentAudio(currentIndex.value);
-    // 自動播放
-    setTimeout(() => {
-      const audio = document.querySelector(
-        ".audio-wrap audio"
-      ) as HTMLAudioElement | null;
-      if (audio) audio.play();
-    }, 100);
   }
 }
 

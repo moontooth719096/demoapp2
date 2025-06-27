@@ -52,6 +52,12 @@ const onAudioEnded = () => {
   musicPlayerStore.nextSong();
 };
 
+onMounted(() => {
+  if (audio.value) {
+    musicPlayerStore.audio = audio.value;
+  }
+});
+
 onMounted(async () => {
   if (audio.value && musicPlayerStore.isPlaying && currentSong.value?.url) {
     audio.value.load();

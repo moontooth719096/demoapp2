@@ -4,6 +4,7 @@ import { ref, computed } from "vue";
 export interface Song {
   title: string;
   url: string;
+  imgUrl: string;
 }
 
 export const useMusicPlayerStore = defineStore("musicPlayer", () => {
@@ -12,6 +13,10 @@ export const useMusicPlayerStore = defineStore("musicPlayer", () => {
   const currentIndex = ref(0);
   const isPlaying = ref(false);
   const repeatMode = ref<1 | 2>(1);
+  const prevSonged = ref<boolean>(false);
+
+  // 全域 audio 實體
+  const audio = ref<HTMLAudioElement | null>(null);
 
   const currentSong = computed(() =>
     songs.value.length > 0 &&
@@ -28,12 +33,19 @@ export const useMusicPlayerStore = defineStore("musicPlayer", () => {
     isPlaying.value = false;
   }
   function prevSong() {
-    currentIndex.value =
-      (currentIndex.value - 1 + songs.value.length) % songs.value.length;
+    if (prevSonged.value) {
+      currentIndex.value =
+        (currentIndex.value - 1 + songs.value.length) % songs.value.length;
+      prevSonged.value = false;
+    } else {
+      prevSonged.value = true;
+      currentIndex.value = currentIndex.value;
+    }
     isPlaying.value = true;
   }
   function nextSong() {
     currentIndex.value = (currentIndex.value + 1) % songs.value.length;
+    prevSonged.value = false;
     isPlaying.value = true;
   }
   function repeatCurrentSong() {
@@ -61,6 +73,10 @@ export const useMusicPlayerStore = defineStore("musicPlayer", () => {
     });
   }
 
+  function clearMusicPlayerStore() {
+    songs.value = [];
+    clearObjectUrl();
+  }
   function setRepeatMode(mode: 1 | 2) {
     repeatMode.value = mode;
   }
@@ -68,8 +84,9 @@ export const useMusicPlayerStore = defineStore("musicPlayer", () => {
     songs,
     currentIndex,
     isPlaying,
-    currentSong,
     repeatMode,
+    prevSonged,
+    currentSong,
     play,
     pause,
     prevSong,
@@ -79,5 +96,7 @@ export const useMusicPlayerStore = defineStore("musicPlayer", () => {
     clearObjectUrl,
     setRepeatMode,
     repeatCurrentSong,
+    clearMusicPlayerStore,
+    audio, // 新增 audio ref
   };
 });

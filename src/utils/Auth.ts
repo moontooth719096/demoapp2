@@ -1,19 +1,25 @@
 import { computed } from "vue";
 import { axiosBase, RespType } from "@/utils/ApiHelper";
-import { getTokenCookieBearer, deleteCookie, removeTokenCookie, cookiekey } from "@/utils/cookie";
+import {
+  getTokenCookieBearer,
+  deleteCookie,
+  removeTokenCookie,
+  cookiekey,
+} from "@/utils/cookie";
 import { PathKeyType } from "@/router/index";
 import router from "@/router";
-import { mapGetters } from "vuex";
 import store from "@/store";
-import { UserInfo } from "@/types/UserInfo";
-import { Start ,Disconnected} from "./ChatRoomHubHelper";
+import { Start, Disconnected } from "./ChatRoomHubHelper";
+import { useMusicPlayerStore } from "@/store/MusicPlayerStore";
 
 const userInfo = computed(() => store.getters.userInfo);
 
 export async function LoginCheck() {
   console.log("LoginCheck!");
   let checkresult = await AppLoginCheck();
-  const isLoginPage = router.currentRoute.value.path === "/Login" || router.currentRoute.value.name === "Login";
+  const isLoginPage =
+    router.currentRoute.value.path === "/Login" ||
+    router.currentRoute.value.name === "Login";
   if (checkresult) {
     if (isLoginPage) {
       //如果token合法 但是當前在登入頁時導向首頁
@@ -40,15 +46,15 @@ export const AppLoginCheck = async (): Promise<boolean> => {
           return;
         }
         result = true;
-        if (userInfo.value){
+        if (userInfo.value) {
           // const userinfo = new UserInfo();
-          // userinfo.UserID =response.data.userID; 
-          // userinfo.PicturesPath =response.data.picturesPath; 
-          // userinfo.UserLevel =response.data.userLevel; 
-          // userinfo.UserName =response.data.userName; 
-          Start();//聊天室連線
+          // userinfo.UserID =response.data.userID;
+          // userinfo.PicturesPath =response.data.picturesPath;
+          // userinfo.UserLevel =response.data.userLevel;
+          // userinfo.UserName =response.data.userName;
+          Start(); //聊天室連線
           store.commit("setUserInfo", response.data);
-        } 
+        }
       })
       .catch((error) => {
         console.error(error);
@@ -60,9 +66,10 @@ export const AppLoginCheck = async (): Promise<boolean> => {
 };
 
 export const AppLogOut = () => {
-  Disconnected();
   AppLogOutClear();
-  const isLiginPage = router.currentRoute.value.path === "/Login" || router.currentRoute.value.name === "Login";
+  const isLiginPage =
+    router.currentRoute.value.path === "/Login" ||
+    router.currentRoute.value.name === "Login";
   //如果登出時當下不在登入頁，則轉向登入頁
   if (!isLiginPage) {
     router.push(PathKeyType.Login.toString());
@@ -78,4 +85,7 @@ const AppLogOutClear = () => {
   store.dispatch("LogOut");
   deleteCookie(cookiekey.userinfo);
   removeTokenCookie();
-};  
+  Disconnected(); //段開聊天室連線
+  //清除MusicPlay撥放暫存
+  useMusicPlayerStore().clearMusicPlayerStore();
+};

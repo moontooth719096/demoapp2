@@ -20,10 +20,7 @@
     @close="showNav = false"
   />
   <ChatIcon class="floating-chat-icon" />
-  <MiniMusicPlayer
-    v-if="!isMusicPlayerPage"
-    style="position: fixed; bottom: 16px; right: 16px; z-index: 1000"
-  />
+  <MiniMusicPlayer v-if="!isMusicPlayerPage" />
   <GlobalAudioPlayer />
 </template>
 
@@ -65,7 +62,8 @@ export default {
     isMusicPlayerPage(): boolean {
       return (
         router.currentRoute.value.path === "/MusicPlayer" ||
-        router.currentRoute.value.name === "MusicPlayer"
+        router.currentRoute.value.name === "MusicPlayer" ||
+        this.isLoginPage
       );
     },
   },

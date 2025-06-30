@@ -37,6 +37,8 @@
                 :key="idx"
                 :class="['lyrics-line', { active: idx === currentLyricIndex }]"
                 :ref="(el) => (lyricLineRefs[idx] = el)"
+                @click="seekTo(line.time)"
+                style="cursor: pointer"
               >
                 {{ line.text }}
               </div>
@@ -227,7 +229,13 @@ const updateProgress = () => {
     duration.value = audio.duration || 0;
   }
 };
-
+function seekTo(time: number) {
+  const audio = musicPlayerStore.audio;
+  if (audio) {
+    audio.currentTime = time;
+    progress.value = time;
+  }
+}
 // 歌詞同步顯示
 interface LyricLine {
   time: number;

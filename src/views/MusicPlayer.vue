@@ -190,7 +190,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, watch } from "vue";
+import { ref, computed, watch, onMounted, onUnmounted } from "vue";
 import { useMusicPlayerStore } from "@/store/MusicPlayerStore";
 import { useMusicPlayerFunctions } from "@/utils/useMusicPlayerFunctions";
 type Ref<T> = import("vue").Ref<T>;
@@ -508,6 +508,38 @@ async function saveUnmarkedSongsToFolder(downloadtype: number) {
     }
   }
 }
+
+// 全域鍵盤快捷鍵：空白鍵播放/暫停，上/下鍵切歌
+onMounted(() => {
+  const keyHandler = (e: KeyboardEvent) => {
+    // 避免在輸入框觸發
+    const tag = (e.target as HTMLElement)?.tagName;
+    if (
+      tag === "INPUT" ||
+      tag === "TEXTAREA" ||
+      (e.target as HTMLElement)?.isContentEditable
+    )
+      return;
+    if (e.code === "Space" || e.key === " ") {
+      e.preventDefault();
+      if (musicPlayerStore.isPlaying) {
+        pause();
+      } else {
+        play();
+      }
+    } else if (e.key === "ArrowUp") {
+      e.preventDefault();
+      prevSong();
+    } else if (e.key === "ArrowDown") {
+      e.preventDefault();
+      nextSong();
+    }
+  };
+  window.addEventListener("keydown", keyHandler);
+  onUnmounted(() => {
+    window.removeEventListener("keydown", keyHandler);
+  });
+});
 </script>
 
 <style lang="scss" scoped>
@@ -538,6 +570,5 @@ async function saveUnmarkedSongsToFolder(downloadtype: number) {
 .lyrics-line.active {
   color: #fff;
   font-weight: bold;
-  font-size: clamp(1.65rem, 3vw, 7.5rem);
 }
 </style>

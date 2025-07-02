@@ -25,6 +25,7 @@
     "datatables.net-vue3": "^3.0.4",
     "git-all": "^0.0.3",
     "lodash": "^4.17.21",
+    "pinia": "^3.0.3",
     "sweetalert2": "^11.10.7",
     "vue": "^3.4.21",
     "vue-good-table-next": "^0.2.2",

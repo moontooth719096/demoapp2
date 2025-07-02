@@ -9,10 +9,12 @@ import "bootstrap";
 import "bootstrap-icons/font/bootstrap-icons.css";
 import VueGoodTableNext from "vue-good-table-next";
 import "./assets/styles/dark-mode.scss";
+import { createPinia } from "pinia";
 
 // import the styles
 import "vue-good-table-next/dist/vue-good-table-next.css";
 
+const pinia = createPinia();
 const app = createApp(App);
 
 app
@@ -22,4 +24,5 @@ app
   .use(store)
   .use(router)
   .use(VueGoodTableNext)
+  .use(pinia)
   .mount("#app");

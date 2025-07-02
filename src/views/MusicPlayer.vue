@@ -29,7 +29,22 @@
       </div>
       <div class="player-panel">
         <div class="music-player-card">
-          <div class="audio-img">
+          <!-- 歌詞同步顯示區塊 -->
+          <div v-if="parsedLyrics.length > 0" class="lyrics-panel">
+            <div class="lyrics-list">
+              <div
+                v-for="(line, idx) in parsedLyrics"
+                :key="idx"
+                :class="['lyrics-line', { active: idx === currentLyricIndex }]"
+                :ref="(el) => (lyricLineRefs[idx] = el)"
+                @click="seekTo(line.time)"
+                style="cursor: pointer"
+              >
+                {{ line.text }}
+              </div>
+            </div>
+          </div>
+          <div v-else class="audio-img">
             <img v-if="albumImgUrl" :src="albumImgUrl" alt="album cover" />
             <div v-else class="audio-img-placeholder">🎵</div>
           </div>
@@ -105,6 +120,7 @@
             <div class="audio-title" v-if="currentSong">
               {{ currentSong.title }}
             </div>
+
             <div class="audio-controls-bottom">
               <div class="audio-progress">
                 <span class="audio-time">{{ formatTime(progress) }}</span>
@@ -174,7 +190,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, watch } from "vue";
+import { ref, computed, watch, onMounted, onUnmounted } from "vue";
 import { useMusicPlayerStore } from "@/store/MusicPlayerStore";
 import { useMusicPlayerFunctions } from "@/utils/useMusicPlayerFunctions";
 type Ref<T> = import("vue").Ref<T>;
@@ -182,6 +198,7 @@ type Ref<T> = import("vue").Ref<T>;
 interface PlayItem {
   name: string;
   url: string;
+  lyrics?: string; // 新增歌詞欄位
 }
 
 const markedDeleteSongs = ref<Set<string>>(new Set());
@@ -189,7 +206,11 @@ const markedStarSongs = ref<Set<string>>(new Set());
 const musicPlayerStore = useMusicPlayerStore();
 // 將 playList, currentIndex 直接與 store 綁定
 const playList = computed(() =>
-  musicPlayerStore.songs.map((item) => ({ name: item.title, url: item.url }))
+  musicPlayerStore.songs.map((item) => ({
+    name: item.title,
+    url: item.url,
+    lyrics: item.lyrics || "", // 歌詞欄位
+  }))
 );
 const currentSong = computed(() => musicPlayerStore.currentSong);
 const currentIndex = computed({
@@ -208,6 +229,89 @@ const updateProgress = () => {
     duration.value = audio.duration || 0;
   }
 };
+function seekTo(time: number) {
+  const audio = musicPlayerStore.audio;
+  if (audio) {
+    audio.currentTime = time;
+    progress.value = time;
+  }
+}
+// 歌詞同步顯示
+interface LyricLine {
+  time: number;
+  text: string;
+}
+const parsedLyrics = ref<LyricLine[]>([]);
+const currentLyricIndex = ref(0);
+const lyricLineRefs = ref<(Element | null | any)[]>([]);
+
+// 解析 LRC 歌詞
+function parseLRC(lrc: string): LyricLine[] {
+  const lines = lrc.split(/\r?\n/);
+  const result: LyricLine[] = [];
+  const timeReg = /\[(\d{1,2}):(\d{2})(?:\.(\d{1,3}))?\]/g;
+  for (const line of lines) {
+    let match: RegExpExecArray | null;
+    let lastIndex = 0;
+    while ((match = timeReg.exec(line)) !== null) {
+      const min = parseInt(match[1]);
+      const sec = parseInt(match[2]);
+      const ms = match[3] ? parseInt(match[3].padEnd(3, "0")) : 0;
+      const time = min * 60 + sec + ms / 1000;
+      lastIndex = timeReg.lastIndex;
+      const text = line.slice(lastIndex).trim();
+      result.push({ time, text });
+    }
+  }
+  // 不過濾空行，保留所有有時間標籤的行
+  return result.sort((a, b) => a.time - b.time);
+}
+
+// 監聽歌曲切換時解析歌詞
+watch(
+  () => currentSong.value?.lyrics,
+  (lyrics) => {
+    if (lyrics) {
+      parsedLyrics.value = parseLRC(lyrics);
+    } else {
+      parsedLyrics.value = [];
+    }
+    currentLyricIndex.value = 0;
+  },
+  { immediate: true }
+);
+
+// 監聽歌曲切換時掛載 audio 事件，確保進度條正常
+watch(
+  () => musicPlayerStore.currentSong?.url,
+  () => {
+    const audio = musicPlayerStore.audio;
+    if (audio) {
+      audio.ontimeupdate = updateProgress;
+      audio.onloadedmetadata = updateProgress;
+    }
+  },
+  { immediate: true }
+);
+
+// 監聽 audio 播放進度，更新歌詞高亮
+watch(progress, (val) => {
+  if (parsedLyrics.value.length === 0) return;
+  for (let i = parsedLyrics.value.length - 1; i >= 0; i--) {
+    if (val >= parsedLyrics.value[i].time) {
+      currentLyricIndex.value = i;
+      break;
+    }
+  }
+});
+
+watch(currentLyricIndex, (idx) => {
+  // 自動置中目前歌詞行
+  const el = lyricLineRefs.value[idx];
+  if (el instanceof HTMLElement) {
+    el.scrollIntoView({ block: "center", behavior: "smooth" });
+  }
+});
 
 const onSeek = () => {
   const audio = musicPlayerStore.audio;
@@ -226,19 +330,6 @@ const formatTime = (sec: number) => {
     .padStart(2, "0");
   return `${m}:${s}`;
 };
-
-// 監聽 audio 事件
-watch(
-  () => musicPlayerStore.currentSong?.url,
-  () => {
-    const audio = musicPlayerStore.audio;
-    if (audio) {
-      audio.ontimeupdate = updateProgress;
-      audio.onloadedmetadata = updateProgress;
-    }
-  },
-  { immediate: true }
-);
 
 // 監聽 store 的 isPlaying 狀態，自動控制 audio 播放/暫停
 watch(
@@ -266,18 +357,40 @@ function onFileChange(event: Event) {
   const input = event.target as HTMLInputElement;
   const files = input.files;
   if (files && files.length > 0) {
-    // 將歌曲清單同步到 Pinia store
-    musicPlayerStore.setSongs(
-      Array.from(files).map((file: File) => ({
-        title: file.name,
-        url: URL.createObjectURL(file),
-        imgUrl: "", // 預設無圖
-      })),
-      0
+    // 先分類所有檔案
+    const fileArr = Array.from(files);
+    const audioFiles = fileArr.filter((f) => f.type.startsWith("audio/"));
+    const lrcFiles = fileArr.filter((f) =>
+      f.name.toLowerCase().endsWith(".lrc")
     );
-    // 預設播放第一首
-    currentIndex.value = 0;
-    setCurrentAudio(currentIndex.value);
+    // 建立 lrc 檔名對應內容的 Promise
+    const lrcMapPromise = Promise.all(
+      lrcFiles.map((f) =>
+        f
+          .text()
+          .then(
+            (text) => [f.name.replace(/\.[^.]+$/, ""), text] as [string, string]
+          )
+      )
+    ).then((entries) => Object.fromEntries(entries));
+    lrcMapPromise.then((lrcMap) => {
+      // 將歌曲清單同步到 Pinia store，並對應歌詞
+      musicPlayerStore.setSongs(
+        audioFiles.map((file: File) => {
+          const baseName = file.name.replace(/\.[^.]+$/, "");
+          return {
+            title: file.name,
+            url: URL.createObjectURL(file),
+            imgUrl: "", // 預設無圖
+            lyrics: lrcMap[baseName] || "",
+          };
+        }),
+        0
+      );
+      // 預設播放第一首
+      currentIndex.value = 0;
+      setCurrentAudio(currentIndex.value);
+    });
   }
 }
 
@@ -395,8 +508,67 @@ async function saveUnmarkedSongsToFolder(downloadtype: number) {
     }
   }
 }
+
+// 全域鍵盤快捷鍵：空白鍵播放/暫停，上/下鍵切歌
+onMounted(() => {
+  const keyHandler = (e: KeyboardEvent) => {
+    // 避免在輸入框觸發
+    const tag = (e.target as HTMLElement)?.tagName;
+    if (
+      tag === "INPUT" ||
+      tag === "TEXTAREA" ||
+      (e.target as HTMLElement)?.isContentEditable
+    )
+      return;
+    if (e.code === "Space" || e.key === " ") {
+      e.preventDefault();
+      if (musicPlayerStore.isPlaying) {
+        pause();
+      } else {
+        play();
+      }
+    } else if (e.key === "ArrowUp") {
+      e.preventDefault();
+      prevSong();
+    } else if (e.key === "ArrowDown") {
+      e.preventDefault();
+      nextSong();
+    }
+  };
+  window.addEventListener("keydown", keyHandler);
+  onUnmounted(() => {
+    window.removeEventListener("keydown", keyHandler);
+  });
+});
 </script>
 
 <style lang="scss" scoped>
 @import "@/assets/styles/MusicPlayer/MusicPlayer.scss";
+.lyrics-panel {
+  width: 100%;
+  overflow-y: auto;
+  margin: 12px 0;
+  background: #222a;
+  border-radius: 8px;
+  padding: 8px 12px;
+  scrollbar-width: none; /* Firefox */
+}
+.lyrics-panel::-webkit-scrollbar {
+  display: none; /* Chrome/Safari */
+}
+.lyrics-list {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.lyrics-line {
+  color: #bbb;
+  font-size: clamp(1.5rem, 2.5vw, 7.2rem);
+  line-height: 2;
+  transition: color 0.2s, font-size 0.2s;
+}
+.lyrics-line.active {
+  color: #fff;
+  font-weight: bold;
+}
 </style>

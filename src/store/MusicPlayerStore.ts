@@ -5,6 +5,7 @@ export interface Song {
   title: string;
   url: string;
   imgUrl: string;
+  lyrics?: string; // 歌詞欄位
 }
 
 export const useMusicPlayerStore = defineStore("musicPlayer", () => {
@@ -62,7 +63,11 @@ export const useMusicPlayerStore = defineStore("musicPlayer", () => {
    * 由外部（如 MusicPlayer 功能）設定歌曲清單
    */
   function setSongs(newSongs: Song[], startIndex = 0) {
-    songs.value = newSongs;
+    // 確保每首歌都有 lyrics 欄位
+    songs.value = newSongs.map((song) => ({
+      ...song,
+      lyrics: song.lyrics || "",
+    }));
     currentIndex.value = startIndex;
     isPlaying.value = false;
   }
